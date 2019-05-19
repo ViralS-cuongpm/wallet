@@ -15,14 +15,20 @@ export class Withdrawal1557195004001 implements MigrationInterface {
             isPrimary: true,
           },
           {
+            name: 'user_id',
+            type: 'int',
+            isNullable: false,
+          },
+          {
             name: 'wallet_id',
             type: 'int',
             isNullable: false,
           },
           {
-            name: 'user_id',
-            type: 'int',
+            name: 'currency',
+            type: 'varchar',
             isNullable: false,
+            width: 200,
           },
           {
             name: 'withdrawal_tx_id',
@@ -34,12 +40,6 @@ export class Withdrawal1557195004001 implements MigrationInterface {
             name: 'txid',
             type: 'varchar',
             width: 200,
-          },
-          {
-            name: 'currency',
-            type: 'varchar',
-            isNullable: false,
-            width: 10,
           },
           {
             name: 'from_address',
@@ -54,12 +54,6 @@ export class Withdrawal1557195004001 implements MigrationInterface {
             width: 200,
           },
           {
-            name: 'status',
-            type: 'varchar',
-            isNullable: false,
-            width: 20,
-          },
-          {
             name: 'amount',
             type: 'decimal',
             isNullable: false,
@@ -67,14 +61,10 @@ export class Withdrawal1557195004001 implements MigrationInterface {
             scale: 18,
           },
           {
-            name: 'hash_check',
+            name: 'status',
             type: 'varchar',
             isNullable: false,
-            width: 255,
-          },
-          {
-            name: 'kms_data_key_id',
-            type: 'int',
+            width: 20,
           },
           {
             name: 'created_at',

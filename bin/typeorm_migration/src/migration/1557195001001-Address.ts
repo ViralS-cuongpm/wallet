@@ -15,7 +15,7 @@ export class Address1557195001001 implements MigrationInterface {
             name: 'currency',
             type: 'varchar',
             isNullable: false,
-            width: 10,
+            width: 200,
           },
           {
             name: 'address',
@@ -24,12 +24,20 @@ export class Address1557195001001 implements MigrationInterface {
             width: 250,
           },
           {
-            name: 'secret',
-            type: 'text',
-          },
-          {
             name: 'is_external',
             type: 'tinyint',
+          },
+          {
+            name: 'is_hd',
+            type: 'tinyint',
+          },
+          {
+            name: 'hd_path',
+            type: 'varchar',
+          },
+          {
+            name: 'secret',
+            type: 'text',
           },
           {
             name: 'created_at',

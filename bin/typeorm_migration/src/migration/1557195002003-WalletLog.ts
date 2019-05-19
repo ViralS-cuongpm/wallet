@@ -23,7 +23,7 @@ export class WalletLog1557195002003 implements MigrationInterface {
             name: 'currency',
             type: 'varchar',
             isNullable: false,
-            width: 10,
+            width: 200,
           },
           {
             name: 'event',

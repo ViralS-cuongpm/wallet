@@ -15,6 +15,16 @@ export class WithdrawalTx1557195004002 implements MigrationInterface {
             isPrimary: true,
           },
           {
+            name: 'user_id',
+            type: 'int',
+            isNullable: false,
+          },
+          {
+            name: 'wallet_id',
+            type: 'int',
+            isNullable: false,
+          },
+          {
             name: 'hot_wallet_address',
             type: 'varchar',
             isNullable: false,
@@ -29,7 +39,7 @@ export class WithdrawalTx1557195004002 implements MigrationInterface {
             name: 'currency',
             type: 'varchar',
             isNullable: false,
-            width: 10,
+            width: 200,
           },
           {
             name: 'status',

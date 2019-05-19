@@ -47,6 +47,9 @@ install:
 reinstall:
 	make ts-deps-reinstall
 
+migrations:
+	cd bin/typeorm_migration && npm run migrations
+
 deploy-207:
 	rsync -avhzL --delete \
 				--no-perms --no-owner --no-group \
@@ -79,3 +82,4 @@ deploy-207-lite:
 deploy-204-lite:
 	make deploy-204
 	ssh stt@192.168.1.204 "cd s-wallet-btc && make install && make build && cd dist && pm2 start app.json"
+

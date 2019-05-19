@@ -22,41 +22,41 @@ export class WalletBalance1557195002002 implements MigrationInterface {
             isNullable: false,
           },
           {
-            name: 'coin',
+            name: 'currency',
             type: 'varchar',
-            width: 20,
+            width: 200,
             isNullable: false,
           },
           {
             name: 'balance',
             type: 'decimal',
             unsigned: true,
-            scale: 18,
-            width: 50,
+            scale: 8,
+            width: 40,
             default: 0,
           },
           {
             name: 'withdrawal_pending',
             type: 'decimal',
             unsigned: true,
-            scale: 18,
-            width: 50,
+            scale: 8,
+            width: 40,
             default: 0,
           },
           {
             name: 'withdrawal_total',
             type: 'decimal',
             unsigned: true,
-            scale: 18,
-            width: 50,
+            scale: 8,
+            width: 40,
             default: 0,
           },
           {
             name: 'deposit_total',
             type: 'decimal',
             unsigned: true,
-            scale: 18,
-            width: 50,
+            scale: 8,
+            width: 40,
             default: 0,
           },
           {
@@ -79,10 +79,9 @@ export class WalletBalance1557195002002 implements MigrationInterface {
       })
     );
 
-    await queryRunner.query(`ALTER TABLE ` + table + ` ADD CONSTRAINT wallet_id_coin UNIQUE (wallet_id, coin)`);
+    await queryRunner.query(`ALTER TABLE ` + table + ` ADD CONSTRAINT wallet_id_coin UNIQUE (wallet_id, currency)`);
   }
   public async down(queryRunner: QueryRunner): Promise<any> {
-    await queryRunner.dropIndex(process.env.TYPEORM_PREFIX + 'wallet_balance', 'wallet_balance_wallet_id');
     await queryRunner.dropTable(process.env.TYPEORM_PREFIX + 'wallet_balance');
   }
 }

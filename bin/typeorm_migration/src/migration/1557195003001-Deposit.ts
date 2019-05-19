@@ -21,16 +21,10 @@ export class Deposit1557195003001 implements MigrationInterface {
             isNullable: false,
           },
           {
-            name: 'sub_currency',
-            type: 'varchar',
-            isNullable: false,
-            width: 10,
-          },
-          {
             name: 'currency',
             type: 'varchar',
             isNullable: false,
-            width: 10,
+            width: 200,
           },
           {
             name: 'to_address',
@@ -47,9 +41,19 @@ export class Deposit1557195003001 implements MigrationInterface {
           {
             name: 'amount',
             type: 'decimal',
-            width: 32,
+            width: 40,
             isNullable: false,
-            scale: 0,
+            scale: 8,
+          },
+          {
+            name: 'block_number',
+            type: 'bigint',
+            isNullable: false,
+          },
+          {
+            name: 'block_timestamp',
+            type: 'bigint',
+            isNullable: false,
           },
           {
             name: 'collect_status',
@@ -67,22 +71,6 @@ export class Deposit1557195003001 implements MigrationInterface {
             type: 'bigint',
           },
           {
-            name: 'next_check_at',
-            type: 'bigint',
-            isNullable: false,
-            default: 0,
-          },
-          {
-            name: 'block_number',
-            type: 'bigint',
-            isNullable: false,
-          },
-          {
-            name: 'block_timestamp',
-            type: 'bigint',
-            isNullable: false,
-          },
-          {
             name: 'created_at',
             type: 'bigint',
           },
@@ -96,10 +84,6 @@ export class Deposit1557195003001 implements MigrationInterface {
     );
     const table_name = process.env.TYPEORM_PREFIX + 'deposit';
     await queryRunner.query(`ALTER TABLE ` + table_name + ` ALTER collect_status SET DEFAULT "uncollected"`);
-    // await queryRunner.query(`DROP INDEX deposit_wallet_id ON ` + table_name);
-    // await queryRunner.query(`DROP INDEX deposit_to_address ON ` + table_name);
-    // await queryRunner.query(`DROP INDEX deposit_next_check_at ON ` + table_name);
-    // await queryRunner.query(`DROP INDEX deposit_collected_txid ON ` + table_name);
     await queryRunner.createIndex(
       process.env.TYPEORM_PREFIX + 'deposit',
       new TableIndex({
@@ -117,13 +101,6 @@ export class Deposit1557195003001 implements MigrationInterface {
     await queryRunner.createIndex(
       process.env.TYPEORM_PREFIX + 'deposit',
       new TableIndex({
-        name: 'deposit_next_check_at',
-        columnNames: ['next_check_at'],
-      })
-    );
-    await queryRunner.createIndex(
-      process.env.TYPEORM_PREFIX + 'deposit',
-      new TableIndex({
         name: 'deposit_collected_txid',
         columnNames: ['collected_txid'],
       })
@@ -133,10 +110,6 @@ export class Deposit1557195003001 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {
-    await queryRunner.dropIndex(process.env.TYPEORM_PREFIX + 'deposit', 'deposit_wallet_id');
-    await queryRunner.dropIndex(process.env.TYPEORM_PREFIX + 'deposit', 'deposit_to_address ');
-    await queryRunner.dropIndex(process.env.TYPEORM_PREFIX + 'deposit', 'deposit_next_check_at');
-    await queryRunner.dropIndex(process.env.TYPEORM_PREFIX + 'deposit', 'deposit_collected_txid');
     await queryRunner.dropTable(process.env.TYPEORM_PREFIX + 'deposit');
   }
 }
