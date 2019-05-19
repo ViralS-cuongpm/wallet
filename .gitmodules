@@ -1,0 +1,6 @@
+[submodule "libs/sota-common"]
+	path = libs/sota-common
+	url = git@github.com:sotatek-dev/scc-common.git
+[submodule "libs/sota-btc"]
+	path = libs/sota-btc
+	url = git@github.com:sotatek-dev/s-wallet-btc-base.git
