@@ -2,9 +2,10 @@ import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class Wallet1557195002001 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<any> {
+    const tableName = process.env.TYPEORM_PREFIX + 'wallet';
     await queryRunner.createTable(
       new Table({
-        name: process.env.TYPEORM_PREFIX + 'wallet',
+        name: tableName,
         columns: [
           {
             name: 'id',
@@ -21,7 +22,7 @@ export class Wallet1557195002001 implements MigrationInterface {
           },
           {
             name: 'label',
-            type: 'int',
+            type: 'varchar',
             isNullable: false,
             width: 255,
           },
@@ -52,11 +53,17 @@ export class Wallet1557195002001 implements MigrationInterface {
       true
     );
     await queryRunner.createIndex(
-      process.env.TYPEORM_PREFIX + 'wallet',
+      tableName,
       new TableIndex({
         name: 'wallet_wallet_user_id',
         columnNames: ['user_id'],
       })
+    );
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`id`, `user_id`, `label`, `currency`, `secret`, `is_hd`, `created_at`, `updated_at`)' +
+        ' VALUES ' +
+        `('1001', '1', 'Dummy BTC Wallet', 'btc', 'dummy', 1, 1557636432024, 1557636432024)`
     );
   }
 

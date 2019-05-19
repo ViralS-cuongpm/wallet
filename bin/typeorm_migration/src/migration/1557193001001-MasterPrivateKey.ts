@@ -15,19 +15,24 @@ export class MasterPrivateKey1557193001001 implements MigrationInterface {
             isPrimary: true,
           },
           {
-            name: 'encrypted',
-            type: 'text',
-            isNullable: false,
-          },
-          {
             name: 'currency',
             type: 'varchar',
             isNullable: false,
             width: 10,
           },
           {
+            name: 'wallet_id',
+            type: 'int',
+            isNullable: false,
+          },
+          {
             name: 'device_id',
             type: 'varchar',
+            isNullable: false,
+          },
+          {
+            name: 'encrypted',
+            type: 'text',
             isNullable: false,
           },
           {
