@@ -1,8 +1,8 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
-export class HotWallet1557195002004 implements MigrationInterface {
+export class InternalTransfer1557195003003 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<any> {
-    const tableName = process.env.TYPEORM_PREFIX + 'hot_wallet';
+    const tableName = process.env.TYPEORM_PREFIX + 'internal_transfer';
     await queryRunner.createTable(
       new Table({
         name: tableName,
@@ -16,20 +16,9 @@ export class HotWallet1557195002004 implements MigrationInterface {
             isPrimary: true,
           },
           {
-            name: 'user_id',
-            type: 'int',
-            isNullable: false,
-          },
-          {
             name: 'wallet_id',
             type: 'int',
             isNullable: false,
-          },
-          {
-            name: 'address',
-            type: 'varchar',
-            isNullable: false,
-            width: 200,
           },
           {
             name: 'currency',
@@ -38,15 +27,28 @@ export class HotWallet1557195002004 implements MigrationInterface {
             width: 200,
           },
           {
+            name: 'from_address',
+            type: 'varchar',
+            width: 150,
+          },
+          {
+            name: 'to_address',
+            type: 'varchar',
+            isPrimary: true,
+            width: 150,
+          },
+          {
             name: 'type',
             type: 'varchar',
+            width: 20,
           },
           {
-            name: 'secret',
-            type: 'text',
+            name: 'txid',
+            type: 'varchar',
+            width: 150,
           },
           {
-            name: 'balance',
+            name: 'amount',
             type: 'decimal',
             unsigned: true,
             scale: 8,
@@ -54,9 +56,22 @@ export class HotWallet1557195002004 implements MigrationInterface {
             default: 0,
           },
           {
-            name: 'is_external',
-            type: 'tinyint',
+            name: 'fee',
+            type: 'decimal',
+            unsigned: true,
+            scale: 8,
+            width: 40,
             default: 0,
+          },
+          {
+            name: 'fee_currency',
+            type: 'varchar',
+            width: 200,
+          },
+          {
+            name: 'status',
+            type: 'varchar',
+            width: 20,
           },
           {
             name: 'created_at',
@@ -70,23 +85,10 @@ export class HotWallet1557195002004 implements MigrationInterface {
       }),
       true
     );
-    await queryRunner.createIndex(
-      tableName,
-      new TableIndex({
-        name: 'wallet_hot_wallet_user_id',
-        columnNames: ['user_id'],
-      })
-    );
-    await queryRunner.createIndex(
-      tableName,
-      new TableIndex({
-        name: 'wallet_hot_wallet_wallet_id',
-        columnNames: ['wallet_id'],
-      })
-    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {
-    await queryRunner.dropTable(process.env.TYPEORM_PREFIX + 'hot_wallet');
+    const tableName = process.env.TYPEORM_PREFIX + 'internal_transfer';
+    await queryRunner.dropTable(tableName);
   }
 }

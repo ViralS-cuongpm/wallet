@@ -79,8 +79,6 @@ export async function insertDeposit(manager: EntityManager, output: TransferEntr
       balanceChange: output.amount,
       refId,
     }),
-    // Persist deposit data in sub table
-    rawdb.insertDepositSubRecord(manager, depositId, output),
     // Create deposit log and webhook progress
     rawdb.insertDepositLog(manager, depositId, DepositEvent.CREATED, depositId, wallet.userId),
   ]);

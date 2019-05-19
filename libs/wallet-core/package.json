@@ -65,7 +65,7 @@
     "node-fetch": "2.5.0",
     "reflect-metadata": "0.1.12",
     "sota-common": "../sota-common",
-    "typeorm": "0.2.11",
+    "typeorm": "0.2.17",
     "typescript": "3.2.2"
   }
 }

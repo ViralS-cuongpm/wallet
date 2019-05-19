@@ -33,6 +33,7 @@ export class WithdrawalLog1557195004003 implements MigrationInterface {
           {
             name: 'data',
             type: 'text',
+            isNullable: true,
           },
           {
             name: 'created_at',

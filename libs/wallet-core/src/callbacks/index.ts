@@ -1,7 +1,6 @@
 export * from './active/doNothing';
 export * from './active/prepareWalletBalance';
 export * from './active/getLatestCrawledBlockNumber';
-export * from './active/getAddressesDepositCrawler';
 export * from './active/pickerDoProcess';
 export * from './active/signerDoProcess';
 export * from './active/senderDoProcess';

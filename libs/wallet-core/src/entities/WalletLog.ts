@@ -15,10 +15,10 @@ export class WalletLog {
   @Column({ name: 'event', nullable: false })
   public event: string;
 
-  @Column({ name: 'balance_change', nullable: false })
+  @Column({ name: 'balance_change', type: 'decimal', precision: 40, scale: 8, nullable: false })
   public balanceChange: string;
 
-  @Column({ name: 'data', nullable: false })
+  @Column({ name: 'data', type: 'text' })
   public data: string;
 
   @Column({ name: 'ref_id', nullable: false })

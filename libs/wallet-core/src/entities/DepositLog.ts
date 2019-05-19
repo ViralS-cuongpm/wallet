@@ -15,7 +15,7 @@ export class DepositLog {
   @Column({ name: 'ref_id', nullable: false })
   public refId: number;
 
-  @Column({ name: 'data', nullable: false })
+  @Column({ name: 'data' })
   public data: string;
 
   @Column({ name: 'created_at', type: 'bigint' })

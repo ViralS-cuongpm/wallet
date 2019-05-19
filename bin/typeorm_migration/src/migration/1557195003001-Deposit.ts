@@ -60,15 +60,18 @@ export class Deposit1557195003001 implements MigrationInterface {
             type: 'varchar',
             width: 20,
             isNullable: false,
+            default: `'uncollected'`,
           },
           {
             name: 'collected_txid',
             type: 'varchar',
             width: 100,
+            isNullable: true,
           },
           {
             name: 'collected_timestamp',
             type: 'bigint',
+            default: 0,
           },
           {
             name: 'created_at',

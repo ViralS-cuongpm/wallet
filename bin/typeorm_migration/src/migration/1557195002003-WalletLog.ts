@@ -34,13 +34,13 @@ export class WalletLog1557195002003 implements MigrationInterface {
           {
             name: 'balance_change',
             type: 'decimal',
-            width: 50,
-            scale: 18,
+            width: 40,
+            scale: 8,
           },
           {
-            name: 'metadata',
-            type: 'varchar',
-            width: 255,
+            name: 'data',
+            type: 'text',
+            isNullable: true,
           },
           {
             name: 'ref_id',
@@ -76,8 +76,6 @@ export class WalletLog1557195002003 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {
-    await queryRunner.dropIndex(process.env.TYPEORM_PREFIX + 'wallet_log', 'wallet_log_wallet_id');
-    await queryRunner.dropIndex(process.env.TYPEORM_PREFIX + 'wallet_log', 'wallet_log_ref_id');
     await queryRunner.dropTable(process.env.TYPEORM_PREFIX + 'wallet_log');
   }
 }

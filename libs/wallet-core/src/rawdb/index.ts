@@ -4,7 +4,6 @@ export * from './findHotWallets';
 export * from './insertDeposit';
 export * from './insertDepositLog';
 export * from './increaseWalletBalance';
-export * from './insertDepositSubRecord';
 export * from './insertWebhookLog';
 export * from './insertWebhookProgress';
 export * from './hasPendingWithdrawal';

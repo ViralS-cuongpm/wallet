@@ -1,9 +1,8 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
-import { TableUnique } from 'typeorm/schema-builder/table/TableUnique';
 
 export class WalletBalance1557195002002 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<any> {
-    const table = process.env.TYPEORM_PREFIX + 'wallet_balance';
+    const tableName = process.env.TYPEORM_PREFIX + 'wallet_balance';
     await queryRunner.createTable(
       new Table({
         name: process.env.TYPEORM_PREFIX + 'wallet_balance',
@@ -78,8 +77,19 @@ export class WalletBalance1557195002002 implements MigrationInterface {
         columnNames: ['wallet_id'],
       })
     );
-
-    await queryRunner.query(`ALTER TABLE ` + table + ` ADD CONSTRAINT wallet_id_coin UNIQUE (wallet_id, currency)`);
+    await queryRunner.query(`ALTER TABLE ` + tableName + ` ADD CONSTRAINT wallet_id_coin UNIQUE (wallet_id, currency)`);
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
+        ' VALUES ' +
+        `('1001', 'btc', 1557636432024, 1557636432024)`
+    );
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
+        ' VALUES ' +
+        `('1001', 'omni.2', 1557636432024, 1557636432024)`
+    );
   }
   public async down(queryRunner: QueryRunner): Promise<any> {
     await queryRunner.dropTable(process.env.TYPEORM_PREFIX + 'wallet_balance');
