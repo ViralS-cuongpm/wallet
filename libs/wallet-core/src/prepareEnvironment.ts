@@ -20,6 +20,7 @@ export async function prepareEnvironment(): Promise<void> {
     logging: process.env.TYPEORM_LOGGING ? process.env.TYPEORM_LOGGING === 'true' : true,
     cache: process.env.TYPEORM_CACHE ? process.env.TYPEORM_CACHE === 'true' : true,
     entities: process.env.TYPEORM_ENTITIES.split(','),
+    entityPrefix: process.env.TYPEORM_PREFIX,
   });
 
   logger.info(`DB connected successfully...`);
