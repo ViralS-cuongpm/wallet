@@ -5,8 +5,8 @@ import { Utils } from 'sota-common';
 export async function insertWalletLog(manager: EntityManager, data: any): Promise<void> {
   data.createdAt = Utils.nowInMillis();
   data.updatedAt = Utils.nowInMillis();
-  const util = require('util');
-  console.log(`>>>>>>>>>>>>>>>>>>>> Insert wallet log: ${util.inspect(data)}`);
+
+  // TODO: Polish me, remove this hacky handling
   const record = new WalletLog();
   record.walletId = data.walletId;
   record.currency = data.currency;
