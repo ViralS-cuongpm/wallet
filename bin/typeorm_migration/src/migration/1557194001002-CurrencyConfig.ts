@@ -10,7 +10,7 @@ export class CurrencyConfig1557194001002 implements MigrationInterface {
           {
             name: 'currency',
             type: 'varchar',
-            width: 190,
+            length: '190',
             isPrimary: true,
             isNullable: false,
           },
@@ -72,6 +72,12 @@ export class CurrencyConfig1557194001002 implements MigrationInterface {
         '(`currency`, `network`, `chain_id`, `chain_name`, `average_block_time`, `required_confirmations`, `internal_endpoint`, `rpc_endpoint`, `rest_endpoint`, `explorer_endpoint`, `created_at`, `updated_at`)' +
         ' VALUES ' +
         `('btc', 'testnet', '', 'Testnet', 30000, 1, 'http://localhost:47001', '{\"protocol\":\"http\",\"host\":\"192.168.1.204\",\"port\":\"18532\",\"user\":\"admin\",\"pass\":\"1\"}', 'http://tbtc-explorer.sotatek.com/api', 'http://test.insight.masternode.io:3001', 1557636432024, 1557636432024)`
+    );
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`currency`, `network`, `chain_id`, `chain_name`, `average_block_time`, `required_confirmations`, `internal_endpoint`, `rpc_endpoint`, `rest_endpoint`, `explorer_endpoint`, `created_at`, `updated_at`)' +
+        ' VALUES ' +
+        `('omni.2', 'testnet', '', 'Testnet', 30000, 1, 'http://localhost:47001', '{\"protocol\":\"http\",\"host\":\"192.168.1.204\",\"port\":\"18532\",\"user\":\"admin\",\"pass\":\"1\"}', 'http://tbtc-explorer.sotatek.com/api', 'http://test.insight.masternode.io:3001', 1557636432024, 1557636432024)`
     );
   }
 

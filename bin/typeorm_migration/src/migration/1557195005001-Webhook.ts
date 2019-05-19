@@ -23,13 +23,13 @@ export class Webhook1557195005001 implements MigrationInterface {
             name: 'type',
             type: 'varchar',
             isNullable: false,
-            width: 20,
+            length: '20',
           },
           {
             name: 'url',
             type: 'varchar',
             isNullable: false,
-            width: 255,
+            length: '255',
           },
           {
             name: 'created_at',

@@ -18,7 +18,7 @@ export class MasterPrivateKey1557193001001 implements MigrationInterface {
             name: 'currency',
             type: 'varchar',
             isNullable: false,
-            width: 10,
+            length: '10',
           },
           {
             name: 'wallet_id',

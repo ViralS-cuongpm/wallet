@@ -28,7 +28,7 @@ export class Withdrawal1557195004001 implements MigrationInterface {
             name: 'currency',
             type: 'varchar',
             isNullable: false,
-            width: 200,
+            length: '200',
           },
           {
             name: 'withdrawal_tx_id',
@@ -39,32 +39,32 @@ export class Withdrawal1557195004001 implements MigrationInterface {
           {
             name: 'txid',
             type: 'varchar',
-            width: 200,
+            length: '200',
           },
           {
             name: 'from_address',
             type: 'varchar',
             isNullable: false,
-            width: 100,
+            length: '100',
           },
           {
             name: 'to_address',
             type: 'varchar',
             isNullable: false,
-            width: 200,
+            length: '200',
           },
           {
             name: 'amount',
             type: 'decimal',
+            precision: 40,
+            scale: 8,
             isNullable: false,
-            width: 50,
-            scale: 18,
           },
           {
             name: 'status',
             type: 'varchar',
             isNullable: false,
-            width: 20,
+            length: '20',
           },
           {
             name: 'created_at',

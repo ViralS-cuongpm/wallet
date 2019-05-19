@@ -29,13 +29,13 @@ export class HotWallet1557195002004 implements MigrationInterface {
             name: 'address',
             type: 'varchar',
             isNullable: false,
-            width: 200,
+            length: '200',
           },
           {
             name: 'currency',
             type: 'varchar',
             isNullable: false,
-            width: 200,
+            length: '200',
           },
           {
             name: 'type',
@@ -49,8 +49,8 @@ export class HotWallet1557195002004 implements MigrationInterface {
             name: 'balance',
             type: 'decimal',
             unsigned: true,
+            precision: 40,
             scale: 8,
-            width: 40,
             default: 0,
           },
           {

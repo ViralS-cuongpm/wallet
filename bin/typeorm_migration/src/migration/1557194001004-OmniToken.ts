@@ -1,26 +1,37 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class LatestBlock1557194001003 implements MigrationInterface {
+export class OmniToken1557194001004 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<any> {
-    const tableName = process.env.TYPEORM_PREFIX + 'latest_block';
+    const tableName = process.env.TYPEORM_PREFIX + 'omni_token';
     await queryRunner.createTable(
       new Table({
         name: tableName,
         columns: [
           {
-            name: 'currency',
+            name: 'symbol',
+            type: 'varchar',
+            length: '20',
+          },
+          {
+            name: 'name',
             type: 'varchar',
             length: '200',
+          },
+          {
+            name: 'property_id',
+            type: 'int',
             isPrimary: true,
             isNullable: false,
           },
           {
-            name: 'type',
-            type: 'varchar',
+            name: 'scale',
+            type: 'int',
+            default: 0,
           },
           {
-            name: 'block_number',
-            type: 'int',
+            name: 'network',
+            type: 'varchar',
+            length: '20',
           },
           {
             name: 'created_at',
@@ -35,6 +46,12 @@ export class LatestBlock1557194001003 implements MigrationInterface {
         ],
       }),
       true
+    );
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`symbol`, `name`, `scale`, `property_id`, `network`, `created_at`, `updated_at`)' +
+        ' VALUES ' +
+        `('usdt', 'Tether USD', 8, 2, 'testnet', 1557636432024, 1557636432024)`
     );
   }
 

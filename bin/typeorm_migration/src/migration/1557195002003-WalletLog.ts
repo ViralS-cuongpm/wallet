@@ -22,20 +22,21 @@ export class WalletLog1557195002003 implements MigrationInterface {
           {
             name: 'currency',
             type: 'varchar',
+            length: '200',
             isNullable: false,
-            width: 200,
           },
           {
             name: 'event',
             type: 'varchar',
+            length: '30',
             isNullable: false,
-            width: 30,
           },
           {
             name: 'balance_change',
             type: 'decimal',
-            width: 40,
+            precision: 40,
             scale: 8,
+            isNullable: false,
           },
           {
             name: 'data',

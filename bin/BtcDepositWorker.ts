@@ -1,7 +1,7 @@
-import { ICrawlerOptions, BlockchainPlatform } from 'sota-common';
+import 'sota-btc';
+import { ICrawlerOptions } from 'sota-common';
 import { prepareEnvironment, callbacks } from 'wallet-core';
 import { BtcCrawler } from 'sota-btc';
-
 prepareEnvironment()
   .then(start)
   .catch(err => {
@@ -17,6 +17,6 @@ function start(): void {
     onBlockCrawled,
   };
 
-  const crawler = new BtcCrawler(BlockchainPlatform.Bitcoin, crawlerOpts);
+  const crawler = new BtcCrawler(crawlerOpts);
   crawler.start();
 }

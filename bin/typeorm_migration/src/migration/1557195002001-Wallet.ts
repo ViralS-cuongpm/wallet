@@ -24,13 +24,12 @@ export class Wallet1557195002001 implements MigrationInterface {
             name: 'label',
             type: 'varchar',
             isNullable: false,
-            width: 255,
           },
           {
             name: 'currency',
             type: 'varchar',
+            length: '200',
             isNullable: false,
-            width: 200,
           },
           {
             name: 'secret',

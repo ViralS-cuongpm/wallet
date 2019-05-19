@@ -23,7 +23,7 @@ export class DepositLog1557195003002 implements MigrationInterface {
             {
               name: 'event',
               type: 'varchar',
-              width: 20,
+              length: '20',
               isNullable: false,
             },
             {

@@ -23,7 +23,7 @@ export class WebhookProgress1557195005002 implements MigrationInterface {
             name: 'type',
             type: 'varchar',
             isNullable: false,
-            width: 20,
+            length: '20',
           },
           {
             name: 'ref_id',
@@ -34,7 +34,7 @@ export class WebhookProgress1557195005002 implements MigrationInterface {
             name: 'event',
             type: 'varchar',
             isNullable: false,
-            width: 20,
+            length: '20',
           },
           {
             name: 'is_progress',

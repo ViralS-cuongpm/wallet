@@ -23,7 +23,7 @@ export class WithdrawalLog1557195004003 implements MigrationInterface {
             name: 'event',
             type: 'varchar',
             isNullable: false,
-            width: 20,
+            length: '20',
           },
           {
             name: 'ref_id',

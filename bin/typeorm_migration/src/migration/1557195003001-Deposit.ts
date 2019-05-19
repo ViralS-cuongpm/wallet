@@ -1,6 +1,4 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
-import { ForeignKeyMetadata } from 'typeorm/metadata/ForeignKeyMetadata';
-import { TableUnique } from 'typeorm/schema-builder/table/TableUnique';
 
 export class Deposit1557195003001 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<any> {
@@ -24,26 +22,26 @@ export class Deposit1557195003001 implements MigrationInterface {
             name: 'currency',
             type: 'varchar',
             isNullable: false,
-            width: 200,
+            length: '200',
           },
           {
             name: 'to_address',
             type: 'varchar',
             isNullable: false,
-            width: 150,
+            length: '150',
           },
           {
             name: 'txid',
             type: 'varchar',
             isNullable: false,
-            width: 100,
+            length: '100',
           },
           {
             name: 'amount',
             type: 'decimal',
-            width: 40,
-            isNullable: false,
+            precision: 40,
             scale: 8,
+            isNullable: false,
           },
           {
             name: 'block_number',
@@ -58,14 +56,14 @@ export class Deposit1557195003001 implements MigrationInterface {
           {
             name: 'collect_status',
             type: 'varchar',
-            width: 20,
+            length: '20',
             isNullable: false,
             default: `'uncollected'`,
           },
           {
             name: 'collected_txid',
             type: 'varchar',
-            width: 100,
+            length: '100',
             isNullable: true,
           },
           {

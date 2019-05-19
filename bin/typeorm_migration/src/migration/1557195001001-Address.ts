@@ -14,14 +14,14 @@ export class Address1557195001001 implements MigrationInterface {
           {
             name: 'currency',
             type: 'varchar',
+            length: '200',
             isNullable: false,
-            width: 200,
           },
           {
             name: 'address',
             type: 'varchar',
+            length: '190',
             isPrimary: true,
-            width: 250,
           },
           {
             name: 'is_external',

@@ -2,6 +2,7 @@ import { createConnection, getConnection } from 'typeorm';
 import { getLogger, BlockchainPlatform, CurrencyRegistry, EnvConfigRegistry } from 'sota-common';
 import { CurrencyConfig, EnvConfig } from './entities';
 import _ from 'lodash';
+import { OmniToken } from './entities/OmniToken';
 
 const logger = getLogger('prepareEnvironment');
 
@@ -27,18 +28,22 @@ export async function prepareEnvironment(): Promise<void> {
   const connection = getConnection();
   logger.info(`Loading environment configurations from database...`);
 
-  const [currencyConfigs, envConfigs] = await Promise.all([
+  const [currencyConfigs, envConfigs, omniTokens] = await Promise.all([
     connection.getRepository(CurrencyConfig).find({}),
     connection.getRepository(EnvConfig).find({}),
+    connection.getRepository(OmniToken).find({}),
   ]);
 
+  omniTokens.forEach(token => {
+    CurrencyRegistry.registerOmniAsset(token.propertyId, token.symbol, token.name, token.scale);
+  });
+
   currencyConfigs.forEach(config => {
-    const platforms = _.values(BlockchainPlatform);
-    if (!_.includes(platforms, config.currency)) {
+    if (!CurrencyRegistry.hasOneCurrency(config.currency)) {
       return;
     }
 
-    const currency = CurrencyRegistry.getOneNativeCurrency(config.currency as BlockchainPlatform);
+    const currency = CurrencyRegistry.getOneCurrency(config.currency);
     CurrencyRegistry.setCurrencyConfig(currency, config);
   });
 

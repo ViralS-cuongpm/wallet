@@ -23,7 +23,7 @@ export class WebhookLog1557195005003 implements MigrationInterface {
             name: 'url',
             type: 'varchar',
             isNullable: false,
-            width: 255,
+            length: '255',
           },
           {
             name: 'params',
@@ -36,8 +36,7 @@ export class WebhookLog1557195005003 implements MigrationInterface {
           },
           {
             name: 'msg',
-            type: 'varchar',
-            width: 1000,
+            type: 'text',
           },
           {
             name: 'created_at',

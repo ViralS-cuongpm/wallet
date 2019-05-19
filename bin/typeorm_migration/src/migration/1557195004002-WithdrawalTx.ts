@@ -32,27 +32,27 @@ export class WithdrawalTx1557195004002 implements MigrationInterface {
           {
             name: 'txid',
             type: 'varchar',
-            width: 100,
+            length: '100',
             isUnique: true,
           },
           {
             name: 'currency',
             type: 'varchar',
             isNullable: false,
-            width: 200,
+            length: '200',
           },
           {
             name: 'status',
             type: 'varchar',
             isNullable: false,
-            width: 20,
+            length: '20',
           },
           {
             name: 'unsigned_txid',
             type: 'varchar',
             isNullable: false,
             isUnique: true,
-            width: 100,
+            length: '100',
           },
           {
             name: 'block_number',
@@ -61,7 +61,7 @@ export class WithdrawalTx1557195004002 implements MigrationInterface {
           {
             name: 'block_hash',
             type: 'varchar',
-            width: 100,
+            length: '100',
           },
           {
             name: 'block_timestamp',
@@ -70,8 +70,8 @@ export class WithdrawalTx1557195004002 implements MigrationInterface {
           {
             name: 'fee_amount',
             type: 'decimal',
-            width: 50,
-            scale: 18,
+            precision: 40,
+            scale: 8,
           },
           {
             name: 'fee_currency',
