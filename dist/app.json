@@ -1,0 +1,8 @@
+{
+  "apps": [
+    {
+      "name": "s-wallet-btc-crawler",
+      "script": "bin/BtcDepositWorker.js"
+    }
+  ]
+}
