@@ -1,7 +1,7 @@
 import {Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate} from "typeorm";
 import { Utils } from "../../../../libs/sota-common";
 
-@Entity(process.env.TYPEORM_PREFIX + 'master_private_key')
+@Entity('master_private_key')
 export class MasterPrivateKey {
   @PrimaryGeneratedColumn({ name: 'id' })
   public id: number;
@@ -14,6 +14,9 @@ export class MasterPrivateKey {
 
   @Column({ name: 'device_id', nullable: false })
   public devideId: string;
+
+  @Column({ name: 'wallet_id', nullable: false })
+  public walletId: string;
 
   @Column({ name: 'created_at' })
   public createdAt: number;
