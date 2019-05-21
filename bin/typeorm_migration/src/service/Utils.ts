@@ -10,6 +10,7 @@ const bs58check = require('bs58check');
 const algorithm = 'aes-192-cbc';
 const iv = Buffer.alloc(16, 0);
 const path = "m/44'/0'/0'/0/";
+const indexOfHotWallet = 0;
 
 
 function encrypt (msg: string, pass: string) {
@@ -37,19 +38,18 @@ export async function createAddress(pass: string, currency: string, index: numbe
       type = 0x00;
     }
     const root = hdkey.fromMasterSeed(new Buffer(seeder, 'hex'));
-    // const masterPrivateKey = root.privateKey.toString('hex');
     let listAddresses: Array<string> = [];
-      for (let i = newIndex; i < (newIndex + amount); i++) {
-        const addrnode = root.derive(path + i.toString());
-        const step1 = addrnode._publicKey;
-        const step2 = createHash('sha256').update(step1).digest();
-        const step3 = createHash('rmd160').update(step2).digest();
-        var step4 = Buffer.allocUnsafe(21);
-        step4.writeUInt8(type, 0);
-        step3.copy(step4, 1); //step4 now holds the extended RIPMD-160 result
-        const step9 = bs58check.encode(step4);      
-        listAddresses.push(step9);        
-      }
+    for (let i = newIndex; i < (newIndex + amount); i++) {
+      const addrnode = root.derive(path + i.toString());
+      const step1 = addrnode._publicKey;
+      const step2 = createHash('sha256').update(step1).digest();
+      const step3 = createHash('rmd160').update(step2).digest();
+      var step4 = Buffer.allocUnsafe(21);
+      step4.writeUInt8(type, 0);
+      step3.copy(step4, 1); //step4 now holds the extended RIPMD-160 result
+      const step9 = bs58check.encode(step4);      
+      listAddresses.push(step9);        
+    }
     const walletId = await createWallet(currency, userId);
     await saveAddresses(listAddresses, walletId, currency, newIndex, path);
     return {
@@ -65,12 +65,10 @@ export async function initWallet(pass: string, privateKey: string, currency: str
   if (network.toLocaleLowerCase() === "mainnet") {
     type = 0x00;
   }
-
   const mnemonic = privateKey;
   const seed = await bip39.mnemonicToSeed(mnemonic); //creates seed buffer
   const root = hdkey.fromMasterSeed(seed);
-  // const masterPrivateKey = root.privateKey.toString('hex');  
-  const addrnode = root.derive(path + '0');
+  const addrnode = root.derive(path + indexOfHotWallet.toString());
 
   const step1 = addrnode._publicKey;
   const step2 = createHash('sha256').update(step1).digest();
@@ -78,7 +76,8 @@ export async function initWallet(pass: string, privateKey: string, currency: str
   var step4 = Buffer.allocUnsafe(21);
   step4.writeUInt8(type, 0);
   step3.copy(step4, 1); //step4 now holds the extended RIPMD-160 result
-  const step9 = bs58check.encode(step4);   
+  const step9 = bs58check.encode(step4);
+
   const walletId = await createWallet(currency, userId);
   await saveHotWallet(walletId, userId, step9, currency);
   await saveMasterPrivateKey(await encrypt(seed.toString('hex'), pass), currency, userId.toString(), walletId.toString());

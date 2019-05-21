@@ -3,26 +3,6 @@ import { MasterPrivateKey } from '../entity';
 import { createConnection, getConnection } from 'wallet-core/node_modules/typeorm';
 import { Wallet, Address, HotWallet } from 'wallet-core/src/entities';
 
-export async function saveAddress(address: string, walletId: number, currency: string, index: number, path: string) {
-  let count = index;
-  let newAddress = new Address();
-  newAddress.walletId = walletId;
-  newAddress.currency = currency;
-  newAddress.address = address;
-  newAddress.secret = count.toString();
-  newAddress.hdPath = path;
-
-  let hotWallet = new HotWallet();
-  hotWallet.userId = 1;
-  hotWallet.walletId = walletId;
-  hotWallet.address = address;
-  hotWallet.currency = currency;
-  hotWallet.secret = count.toString();
-
-  await getConnection().getRepository(Address).save(newAddress);
-  await getConnection().getRepository(HotWallet).save(newAddress);
-}
-
 export async function saveAddresses(addresses: string[], walletId: number, currency: string, index: number, path: string) {
   let count = index;
   addresses.forEach(async address => {
