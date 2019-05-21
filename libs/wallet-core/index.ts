@@ -9,5 +9,5 @@ export { callbacks, entities };
 export * from './src/factories/CurrencyDepositFactory';
 export * from './src/WebhookProcessor';
 export * from './src/encrypt/Kms';
-
+export * from './src/BaseCoinCollector';
 export * from './src/prepareEnvironment';

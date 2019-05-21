@@ -58,7 +58,6 @@
     "@types/uuid": "3.4.4",
     "aws-sdk": "2.384.0",
     "bcryptjs": "2.4.3",
-    "bignumber.js": "8.0.1",
     "highlight.js": "9.14.2",
     "lodash": "4.17.11",
     "mysql": "2.16.0",

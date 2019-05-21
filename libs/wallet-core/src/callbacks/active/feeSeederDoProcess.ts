@@ -8,7 +8,6 @@ export async function feeSeederDoProcess() {
 // import * as rawdb from '../../rawdb';
 // import { InternalTransferType, WithdrawalStatus } from '../../Enums';
 // import { Address, WalletBalance } from '../../entities';
-// import BigNumber from 'bignumber.js';
 // import { InternalTransfer } from '../../entities/InternalTransfer';
 // import { hotWalletToPrivateKey } from './signerDoProcess';
 
