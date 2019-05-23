@@ -13,7 +13,7 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
   
   public async createNewAddress(req: any, res: any) {
     const network: string = req.body.network;
-    const pass: string = req.body.pass.toString();
+    const pass: string = req.body.pass;
     const amount: number = req.body.amount;
     const currency: string = req.params.currency.toString();
     const index: number = req.body.index;
