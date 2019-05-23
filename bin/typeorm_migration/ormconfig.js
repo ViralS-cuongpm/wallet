@@ -11,7 +11,7 @@ try {
 
 module.exports = {
   type: 'mysql',
-  port: process.env.port,
+  port: process.env.TYPEORM_PORT,
   username: process.env.TYPEORM_USERNAME,
   logging: process.env.TYPEORM_LOGGING ? process.env.TYPEORM_LOGGING === 'true' : true,
   password: process.env.TYPEORM_PASSWORD,

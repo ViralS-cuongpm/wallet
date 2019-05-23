@@ -26,12 +26,12 @@ export class MasterPrivateKey1557193001001 implements MigrationInterface {
             isNullable: false,
           },
           {
-            name: 'device_id',
-            type: 'varchar',
+            name: 'encrypted',
+            type: 'text',
             isNullable: false,
           },
           {
-            name: 'encrypted',
+            name: 'password_hash',
             type: 'text',
             isNullable: false,
           },
@@ -50,8 +50,8 @@ export class MasterPrivateKey1557193001001 implements MigrationInterface {
     await queryRunner.createIndex(
       process.env.TYPEORM_PREFIX + 'master_private_key',
       new TableIndex({
-        name: 'wallet_master_private_key_device_id',
-        columnNames: ['device_id'],
+        name: 'wallet_master_private_key_currency',
+        columnNames: ['currency'],
       })
     );
   }
@@ -59,7 +59,7 @@ export class MasterPrivateKey1557193001001 implements MigrationInterface {
   public async down(queryRunner: QueryRunner): Promise<any> {
     await queryRunner.dropIndex(
       process.env.TYPEORM_PREFIX + 'master_private_key',
-      'wallet_master_private_key_device_id'
+      'wallet_master_private_key_currency'
     );
     await queryRunner.dropTable(process.env.TYPEORM_PREFIX + 'master_private_key');
   }

@@ -12,13 +12,15 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
    */
   
   public async createNewAddress(req: any, res: any) {
-    const network = 'testnet';
+    const network: string = req.body.network;
     const pass: string = req.body.pass.toString();
     const amount: number = req.body.amount;
     const currency: string = req.params.currency.toString();
     const index: number = req.body.index;
-    if (!userId) {
-      res.status(400).json({ error: "Lack user_id"})
+    const masterprivatekey: string = req.body.masterprivatekey;
+
+    if (!network) {
+      res.status(400).json({ error: "Lack network"})
       return;
     }
     if (!pass) {
@@ -33,27 +35,48 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
       res.status(400).json({ error: "Lack currency"})
       return;
     }
-    if (!index) {
+    if (index === null || typeof index === 'undefined') {
       res.status(400).json({ error: "Lack index"})
       return;
     }
+    if (!masterprivatekey) {
+      res.status(400).json({ error: "Lack masterprivatekey"})
+      return;
+    }
     try {
-      const address = await Utils.createAddress(pass, currency, index, amount, network, userId);
-      if(!address) {
+      if (!await Utils.checkPrivateKey(currency)) {
+        await Utils.initWallet(pass, masterprivatekey, currency, userId, network);
+      }
+      if (!await Utils.checkPassword(pass, currency)) {
+        res.status(400).json({ error: "Invalid Password"});
+        return ;
+      }      
+      if (!await Utils.validatePrivateKey(currency, pass, masterprivatekey)) {
+        res.status(400).json({ error: "Invalid MasterPrivateKey"});
+        return ;
+      }      
+      const address = await Utils.createAddress(pass, currency, index, amount, network, userId, masterprivatekey);
+      if (!address) {
         res.status(400).json({ error: "Dont have hd-wallet"});
         return;
       }
       res.json(address);
     }  catch (e) {
       res.status(500).json( {error: e.toString()});
+      return;
     }
 
   }
 
   protected async initWallet(req: any, res: any) {
+    const network: string = req.body.network;
     const pass: string = req.body.pass;
     const masterprivatekey: string = req.body.masterprivatekey;
     const currency: string = req.params.currency;
+    if (!network) {
+      res.status(400).json({ error: "Lack network"})
+      return;
+    }
     if (!userId) {
       res.status(400).json({ error: "Lack user_id"})
       return;
@@ -70,7 +93,7 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
       res.status(400).json({ error: "Lack currency"})
       return;
     }
-    await Utils.initWallet(pass, masterprivatekey, currency, userId);    
+    await Utils.initWallet(pass, masterprivatekey, currency, userId, network);
   } 
 
   protected async signTransaction(req: any, res: any) {
@@ -94,7 +117,9 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
   protected setup() {
     super.setup();
     this.app.use(bodyParser.json());
-
+    this.app.get('/api/:currency/haha', async (req, res) => {
+      res.json('ok');
+    });
     this.app.post('/api/:currency/address', async (req, res) => {
       try {
         await this.createNewAddress(req, res);

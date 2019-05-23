@@ -3,6 +3,32 @@ import { MasterPrivateKey } from '../entity';
 import { createConnection, getConnection } from 'wallet-core/node_modules/typeorm';
 import { Wallet, Address, HotWallet } from 'wallet-core/src/entities';
 
+const passwordHash = require('password-hash');
+
+export async function checkPrivateKeyDB (currency: string) {
+  let masterPrivateKey = await getConnection().getRepository(MasterPrivateKey).findOne({
+    where: {
+      currency: currency,      
+    }
+  }) 
+  if (!masterPrivateKey) {
+    return false;
+  }   
+  return true;
+}
+
+export async function checkPasswordDB (currency: string, pass: string) {
+  let masterPrivateKey = await getConnection().getRepository(MasterPrivateKey).findOne({
+    where: {
+      currency: currency
+    }
+  }) 
+  if (!passwordHash.verify(pass, masterPrivateKey.passwordHash)) {
+    return false;
+  }   
+  return true;
+}  
+
 export async function saveAddresses(addresses: string[], walletId: number, currency: string, index: number, path: string) {
   let count = index;
   addresses.forEach(async address => {
@@ -19,11 +45,10 @@ export async function saveAddresses(addresses: string[], walletId: number, curre
   })
 }
 
-export async function getPrivateKey(currency: string, pass: string, deviceId: string) {
+export async function getPrivateKey(currency: string) {
   let masterPrivateKey = await getConnection().getRepository(MasterPrivateKey).findOne({
     where: {
       currency: currency,
-      deviceid: deviceId
     }
   })  
   if(masterPrivateKey) {
@@ -35,18 +60,17 @@ export async function getPrivateKey(currency: string, pass: string, deviceId: st
   return null;
 }
 
-export async function saveMasterPrivateKey(encrypted: string, currency: string, deviceId: string, walletId: string) {
+export async function saveMasterPrivateKey(encrypted: string, currency: string, password: string, walletId: string) {
   let masterPrivateKey = await getConnection().getRepository(MasterPrivateKey).findOne({
     where: {
       currency: currency,
-      deviceid: deviceId
     }
   })
   if(!masterPrivateKey) {
     masterPrivateKey = new MasterPrivateKey();
     masterPrivateKey.walletId = walletId;
     masterPrivateKey.encrypted = encrypted;
-    masterPrivateKey.devideId = deviceId;
+    masterPrivateKey.passwordHash = passwordHash.generate(password);
     masterPrivateKey.currency = currency;
     await getConnection().getRepository(MasterPrivateKey).save(masterPrivateKey);
   }

@@ -1,7 +1,8 @@
 import { createHash } from "crypto";
-import { saveAddresses, getPrivateKey, saveMasterPrivateKey, createWallet, saveHotWallet} from './DBUtils'
+import { saveAddresses, getPrivateKey, saveMasterPrivateKey, createWallet, saveHotWallet, checkPrivateKeyDB, checkPasswordDB} from './DBUtils'
 import { promises } from "fs";
 
+const passwordHash = require('password-hash');
 const crypto = require('crypto');
 const assert = require('assert');
 const bip39 = require('bip39');
@@ -26,9 +27,10 @@ function decrypt(encrypted: string, pass: string) {
   return decrypted.toString('hex');
 }
 
-export async function createAddress(pass: string, currency: string, index: number, amount: number, network: string, userId: number): Promise<object> {
-    const seed = await getPrivateKey(currency, pass, userId.toString());        
-    if (!seed.seed) {
+export async function createAddress(pass: string, currency: string, index: number, amount: number, 
+  network: string, userId: number, masterPrivateKey: string): Promise<object> {
+    const seed = await getPrivateKey(currency);        
+    if (!seed) {
       return null;
     }
     const newIndex = calIndex(index);
@@ -54,13 +56,12 @@ export async function createAddress(pass: string, currency: string, index: numbe
     await saveAddresses(listAddresses, walletId, currency, newIndex, path);
     return {
       addresses: listAddresses,
-      index: index,
+      index: newIndex,
       amount: amount
     }
 }
 
-export async function initWallet(pass: string, privateKey: string, currency: string, userId: number) {
-  const network = 'testnet';
+export async function initWallet(pass: string, privateKey: string, currency: string, userId: number, network: string) {
   let type = 0x6f;
   if (network.toLocaleLowerCase() === "mainnet") {
     type = 0x00;
@@ -80,11 +81,11 @@ export async function initWallet(pass: string, privateKey: string, currency: str
 
   const walletId = await createWallet(currency, userId);
   await saveHotWallet(walletId, userId, step9, currency);
-  await saveMasterPrivateKey(await encrypt(seed.toString('hex'), pass), currency, userId.toString(), walletId.toString());
+  await saveMasterPrivateKey(await encrypt(seed.toString('hex'), pass), currency, pass, walletId.toString());
 }
 
 export async function calPrivateKey (pass: string, index: number, currency: string, userId: number, network: string) {
-  const seed = await getPrivateKey(currency, pass, userId.toString());     
+  const seed = await getPrivateKey(currency);     
   if (!seed.seed) {
     return null;
   }
@@ -107,10 +108,29 @@ export async function calPrivateKey (pass: string, index: number, currency: stri
 }
 
 function calIndex(number: number) {
-  if (number === 0) {
-    return number;
-  }
   return number + 100;
+}
+
+export async function checkPassword(pass: string, currency: string) {
+  if (await checkPasswordDB(currency, pass)) {
+    return true;
+  }
+  return false;
+}
+
+export async function checkPrivateKey(currency: string) {
+  if (await checkPrivateKeyDB(currency)) {
+    return true;
+  }
+  return false;
+}
+export async function validatePrivateKey(currency: string, pass: string, masterPrivateKey: string) {
+  const seed = await getPrivateKey(currency);    
+  const seeder = decrypt(seed.seed, pass);
+  if (seeder.toString() !== (await bip39.mnemonicToSeed(masterPrivateKey)).toString('hex')) {
+    return false;
+  }
+  return true;
 }
 
 

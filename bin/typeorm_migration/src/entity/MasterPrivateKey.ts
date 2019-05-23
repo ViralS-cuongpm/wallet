@@ -12,8 +12,8 @@ export class MasterPrivateKey {
   @Column({ name: 'currency', nullable: false })
   public currency: string;
 
-  @Column({ name: 'device_id', nullable: false })
-  public devideId: string;
+  @Column({ name: 'password_hash', nullable: false })
+  public passwordHash: string;
 
   @Column({ name: 'wallet_id', nullable: false })
   public walletId: string;
