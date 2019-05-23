@@ -29,16 +29,20 @@ export async function findAndUpdateOneGroupOfCollectableDeposits(
     return { walletId: 0, currency: null, records: [] };
   }
 
-  if (!currency.isUTXOBased) {
-    records.splice(1);
+  const finalRecords: Deposit[] = [];
+  if (currency.isUTXOBased) {
+    finalRecords.push(...records);
+  } else {
+    const chosenAddress = records[0].toAddress;
+    finalRecords.push(...records.filter(deposit => deposit.toAddress === chosenAddress));
   }
 
   // TODO: Check whether the total value is greater than the threshold here...
   // If the value does not satisfy the condition, update their timestamp and leave as it is
   // We'll check it again next time, hopefully the deposit is enough at that time
-  rawdb.updateRecordsTimestamp(manager, Deposit, records.map(r => r.id));
+  rawdb.updateRecordsTimestamp(manager, Deposit, finalRecords.map(r => r.id));
 
-  return { walletId, currency, records };
+  return { walletId, currency, records: finalRecords };
 }
 
 /**
