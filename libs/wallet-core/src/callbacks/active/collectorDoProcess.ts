@@ -43,7 +43,7 @@ async function _collectorDoProcess(manager: EntityManager, collector: BasePlatfo
   const platformCurrencies = CurrencyRegistry.getCurrenciesOfPlatform(platformCurrency.platform);
   const allSymbols = platformCurrencies.map(c => c.symbol);
 
-  const { walletId, currency, records } = await rawdb.findAndUpdateOneGroupOfCollectableDeposits(manager, allSymbols);
+  const { walletId, currency, records } = await rawdb.findOneGroupOfCollectableDeposits(manager, allSymbols);
 
   if (!walletId || !currency || !records.length) {
     logger.info(`There're no uncollected deposit right now. Will try to process later...`);
@@ -88,7 +88,7 @@ async function _constructUtxoBasedCollectTx(deposits: Deposit[], toAddress: stri
         }
 
         const utxo = allAddressUtxos.find(u => {
-          return u.txid === txid && u.addresss === depositAddress && u.vout === vout.n;
+          return u.txid === txid && u.address === depositAddress && u.vout === vout.n;
         });
 
         // Double check. Something went wrong here as well. The output has been spent.
