@@ -43,7 +43,7 @@ async function _collectorDoProcess(manager: EntityManager, collector: BasePlatfo
   const platformCurrencies = CurrencyRegistry.getCurrenciesOfPlatform(platformCurrency.platform);
   const allSymbols = platformCurrencies.map(c => c.symbol);
 
-  const { walletId, currency, records } = await rawdb.findAndUpdateOneGroupOfCollectableDeposits(manager, allSymbols);
+  const { walletId, currency, records } = await rawdb.findOneGroupOfCollectableDeposits(manager, allSymbols);
 
   if (!walletId || !currency || !records.length) {
     logger.info(`There're no uncollected deposit right now. Will try to process later...`);
