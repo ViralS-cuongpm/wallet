@@ -21,6 +21,7 @@ deps:
 	make dep t=libs/sota-btc
 	make dep t=bin
 	make dep t=bin/typeorm_migration
+	make dep t=bin/eos
 
 ts-dep-reinstall:
 	cd $(t) && rm -rf node_modules package-lock.json && npm i
@@ -35,6 +36,7 @@ ts-deps:
 	make ts-dep-install t=libs/sota-btc
 	make ts-dep-install t=bin
 	make ts-dep-install t=bin/typeorm_migration
+	make ts-dep-install t=bin/eos
 
 ts-deps-reinstall:
 	make ts-dep-reinstall t=./
@@ -43,6 +45,7 @@ ts-deps-reinstall:
 	make ts-dep-reinstall t=libs/sota-btc
 	make ts-dep-reinstall t=bin
 	make ts-dep-reinstall t=bin/typeorm_migration
+	make ts-dep-reinstall t=bin/eos
 
 install:
 	make ts-deps

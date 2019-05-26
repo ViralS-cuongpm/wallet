@@ -1,8 +1,8 @@
 import { MigrationInterface, QueryRunner, Table } from 'typeorm';
 
-export class OmniToken1557194001004 implements MigrationInterface {
+export class EosToken1557194001005 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<any> {
-    const tableName = process.env.TYPEORM_PREFIX + 'omni_token';
+    const tableName = process.env.TYPEORM_PREFIX + 'eos_token';
     await queryRunner.createTable(
       new Table({
         name: tableName,
@@ -11,16 +11,12 @@ export class OmniToken1557194001004 implements MigrationInterface {
             name: 'symbol',
             type: 'varchar',
             length: '20',
-          },
-          {
-            name: 'name',
-            type: 'varchar',
-            length: '200',
-          },
-          {
-            name: 'property_id',
-            type: 'int',
             isPrimary: true,
+          },
+          {
+            name: 'code',
+            type: 'varchar',
+            length: '100',
             isNullable: false,
           },
           {
@@ -49,14 +45,14 @@ export class OmniToken1557194001004 implements MigrationInterface {
     );
     await queryRunner.query(
       `INSERT INTO ${tableName} ` +
-        '(`symbol`, `name`, `scale`, `property_id`, `network`, `created_at`, `updated_at`)' +
+        '(`symbol`, `code`, `scale`, `network`, `created_at`, `updated_at`)' +
         ' VALUES ' +
-        `('usdt', 'Tether USD', 8, 2, 'testnet', 1557636432024, 1557636432024)`
+        `('EOS', 'eosio.token', 4, 'testnet', 1557636432024, 1557636432024)`
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {
-    const tableName = process.env.TYPEORM_PREFIX + 'omni_token';
+    const tableName = process.env.TYPEORM_PREFIX + 'eos_token';
     await queryRunner.dropTable(tableName);
   }
 }
