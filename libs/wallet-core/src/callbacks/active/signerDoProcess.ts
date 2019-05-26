@@ -1,4 +1,4 @@
-import { getLogger, HotWalletType, Utils, BasePlatformWorker, CurrencyRegistry, GatewayRegistry } from 'sota-common';
+import { getLogger, HotWalletType, Utils, BasePlatformWorker, CurrencyRegistry, GatewayRegistry, ICurrency } from 'sota-common';
 import { EntityManager, getConnection } from 'typeorm';
 import { WithdrawalTx, Withdrawal } from '../../entities';
 import { WithdrawalStatus } from '../../Enums';
@@ -6,9 +6,9 @@ import * as rawdb from '../../rawdb';
 
 const logger = getLogger('signerDoProcess');
 
-export async function signerDoProcess(signer: BasePlatformWorker): Promise<void> {
+export async function signerDoProcess(platformCurrency: ICurrency, privateKey: string, withdrawalId: number): Promise<void> {
   await getConnection().transaction(async manager => {
-    await _signerDoProcess(manager, signer);
+    await _signerDoProcess(manager, platformCurrency, privateKey, withdrawalId);
   });
 }
 
@@ -24,12 +24,12 @@ export async function signerDoProcess(signer: BasePlatformWorker): Promise<void>
  * @param manager
  * @param signer
  */
-async function _signerDoProcess(manager: EntityManager, signer: BasePlatformWorker): Promise<void> {
-  const platformCurrency = signer.getCurrency();
+async function _signerDoProcess(manager: EntityManager, platformCurrency: ICurrency, privateKey: string, withdrawalId: number): Promise<void> {
+  // const platformCurrency = signer.getCurrency();
   const allCurrencies = CurrencyRegistry.getCurrenciesOfPlatform(platformCurrency.platform);
   const allSymbols = allCurrencies.map(c => c.symbol);
   const statuses = [WithdrawalStatus.SIGNING];
-  const withdrawalTx = await rawdb.findOneWithdrawalTx(manager, allSymbols, statuses);
+  const withdrawalTx = await rawdb.findOneWithdrawalTxWithId(manager, allSymbols, statuses, withdrawalId);
 
   if (!withdrawalTx) {
     logger.info(`There are no signing withdrawals to process: platform=${platformCurrency.platform}`);
@@ -40,15 +40,15 @@ async function _signerDoProcess(manager: EntityManager, signer: BasePlatformWork
   const gateway = GatewayRegistry.getGatewayInstance(currency);
 
   const withdrawalTxId = withdrawalTx.id;
-  const hotWallet = await rawdb.getOneHotWallet(manager, withdrawalTx.currency, withdrawalTx.hotWalletAddress);
+  const hotWallet = await rawdb.getOneHotWallet(manager, currency.platform, withdrawalTx.hotWalletAddress);
 
   // TODO: handle multisig hot wallet
   if (hotWallet.type !== HotWalletType.Normal) {
     throw new Error(`Only support normal hot wallet at the moment.`);
   }
 
-  const rawPrivateKey = await hotWallet.extractRawPrivateKey();
-  const signedTx = await gateway.signRawTransaction(withdrawalTx.unsignedRaw, rawPrivateKey);
+  // const rawPrivateKey = await hotWallet.extractRawPrivateKey();
+  const signedTx = await gateway.signRawTransaction(withdrawalTx.unsignedRaw, privateKey);
   const status = WithdrawalStatus.SIGNED;
   const txid = signedTx.txid;
 

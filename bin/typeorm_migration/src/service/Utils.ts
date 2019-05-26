@@ -5,7 +5,7 @@ import * as Const from './Const';
 import {BigNumber} from 'sota-common'
 import { Connection } from "typeorm";
 
-
+const bitcore = require('sota-btc/node_modules/bitcore-lib');
 const passwordHash = require('password-hash');
 const crypto = require('crypto');
 const assert = require('assert');
@@ -43,13 +43,9 @@ export async function createAddress(pass: string, currency: string, index: numbe
     for (let i = newIndex; i < (newIndex + amount); i++) {
       const addrnode = root.derive(Const.path + i.toString());
       const step1 = addrnode._publicKey;
-      const step2 = createHash('sha256').update(step1).digest();
-      const step3 = createHash('rmd160').update(step2).digest();
-      var step4 = Buffer.allocUnsafe(21);
-      step4.writeUInt8(type, 0);
-      step3.copy(step4, 1); //step4 now holds the extended RIPMD-160 result
-      const step9 = bs58check.encode(step4);      
-      listAddresses.push(step9);        
+      const childPrivateKey = new bitcore.PrivateKey(addrnode._privateKey.toString('hex'), network);
+      const address = childPrivateKey.toAddress().toString();
+      listAddresses.push(address);        
     }
     const walletId = await createWallet(currency, connection);
     await saveAddresses(listAddresses, currency, newIndex, Const.path, connection);
@@ -60,7 +56,7 @@ export async function createAddress(pass: string, currency: string, index: numbe
     }
 }
 
-export async function initWallet(pass: string, privateKey: string, currency: string, network: string, connection: Connection) {
+export async function initWallet(pass: string, privateKey: string, currency: string, plaformCurrency: string, network: string, connection: Connection) {
   let type = 0x6f;
   if (network.toLocaleLowerCase() === "mainnet") {
     type = 0x00;
@@ -71,15 +67,10 @@ export async function initWallet(pass: string, privateKey: string, currency: str
   const addrnode = root.derive(Const.path + Const.indexOfHotWallet.toString());
 
   const step1 = addrnode._publicKey;
-  const step2 = createHash('sha256').update(step1).digest();
-  const step3 = createHash('rmd160').update(step2).digest();
-  var step4 = Buffer.allocUnsafe(21);
-  step4.writeUInt8(type, 0);
-  step3.copy(step4, 1); //step4 now holds the extended RIPMD-160 result
-  const step9 = bs58check.encode(step4);
-
+  const childPrivateKey = new bitcore.PrivateKey(addrnode._privateKey.toString('hex'), network);
+  const address = childPrivateKey.toAddress().toString();
   await createWallet(currency, connection);
-  await saveHotWallet(step9, currency, connection);
+  await saveHotWallet(address, plaformCurrency, connection);
   await saveMasterPrivateKey(await encrypt(seed.toString('hex'), pass), currency, pass, connection);
 }
 
@@ -88,7 +79,7 @@ export async function calPrivateKey (pass: string, index: number, currency: stri
   if (!seed.seed) {
     return null;
   }
-  const newIndex = calIndex(index);
+  const newIndex = index;
   const seeder = decrypt(seed.seed, pass)
   let type = 0x6f;
   if (network.toLocaleLowerCase() === "mainnet") {
@@ -97,13 +88,8 @@ export async function calPrivateKey (pass: string, index: number, currency: stri
   const root = await hdkey.fromMasterSeed(Buffer.from(seeder, 'hex'));  
   const addrnode = root.derive(Const.path + newIndex.toString());
   const step1 = addrnode._privateKey;
-  const step2 = createHash('sha256').update(step1).digest();
-  const step3 = createHash('rmd160').update(step2).digest();
-  var step4 = Buffer.allocUnsafe(21);
-  step4.writeUInt8(type, 0);
-  step3.copy(step4, 1); //step4 now holds the extended RIPMD-160 result
-  const step9 = bs58check.encode(step4);      
-  return step9;
+  const privateKey = new bitcore.PrivateKey(step1.toString('hex'), network);
+  return privateKey.toWIF();
 }
 
 function calIndex(number: number) {

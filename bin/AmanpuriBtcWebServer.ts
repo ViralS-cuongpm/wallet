@@ -1,10 +1,12 @@
 import * as Utils from './typeorm_migration/src/service/Utils';
 import util from 'util';
 import { getLogger } from 'sota-common/src/Logger';
+import { CurrencyRegistry } from 'sota-common';
 import * as bodyParser from 'body-parser';
 import { BtcWebServer } from 'sota-btc';
-import { doSign } from './BtcSignerWorker';
 import { createConnection, getConnection, Connection } from 'wallet-core/node_modules/typeorm';
+import {callbacks} from 'wallet-core';
+import { indexOfHotWallet } from './typeorm_migration/src/service/Const';
 
 const logger = getLogger('BaseWebServer');
 export class AmanpuriBtcWebServer extends BtcWebServer {
@@ -18,7 +20,7 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
     const pass: string = req.body.pass;
     const amount: number = req.body.amount;
     const nameCoin: string = req.params.currency.toString();
-    //check
+    //check params
     if (!nameCoin) {
       res.status(400).json({ error: "Lack currency"})
       return;
@@ -29,7 +31,7 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
       res.status(400).json({ error: "Incorrect currency"})
     }
     if (!coin) {
-      res.status(400).json({ error: "Incorrect currency"})
+      res.status(400).json({ error: "Incorrect coin"})
     }    
     const index: number = req.body.index;
     const masterprivatekey: string = req.body.masterprivatekey;
@@ -54,19 +56,20 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
       res.status(400).json({ error: "Lack masterprivatekey"})
       return;
     }
+  
     try {
-      if (!await Utils.checkPrivateKey(currency, connection)) {
-        await Utils.initWallet(pass, masterprivatekey, currency, network, connection);
+      if (!await Utils.checkPrivateKey(coin, connection)) {
+        await Utils.initWallet(pass, masterprivatekey, coin, currency, network, connection);
       }
-      if (!await Utils.checkPassword(pass, currency, connection)) {
+      if (!await Utils.checkPassword(pass, coin, connection)) {
         res.status(400).json({ error: "Invalid Password"});
         return ;
       }      
-      if (!await Utils.validatePrivateKey(currency, pass, masterprivatekey, connection)) {
+      if (!await Utils.validatePrivateKey(coin, pass, masterprivatekey, connection)) {
         res.status(400).json({ error: "Invalid MasterPrivateKey"});
         return ;
       }      
-      const address = await Utils.createAddress(pass, currency, index, amount, network, masterprivatekey, connection);
+      const address = await Utils.createAddress(pass, coin, index, amount, network, masterprivatekey, connection);
       if (!address) {
         res.status(400).json({ error: "Dont have hd-wallet"});
         return;
@@ -101,7 +104,7 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
       res.status(400).json({ error: "Incorrect currency"})
     }
     if (!coin) {
-      res.status(400).json({ error: "Incorrect currency"})
+      res.status(400).json({ error: "Incorrect coin"})
     } 
     if (!id) {
       res.status(400).json({ error: "Lack withdrawalId"})
@@ -112,17 +115,18 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
       return;
     }
     const connection = getConnection();
-    if (!await Utils.checkPassword(pass, currency, connection)) {
+    if (!await Utils.checkPassword(pass, coin, connection)) {
       res.status(400).json({ error: "Invalid Password"});
       return ;
     }  
-    const privateKey = await Utils.calPrivateKey(pass, 0, currency, network, connection)
+    const privateKey = await Utils.calPrivateKey(pass, indexOfHotWallet, coin, network, connection)
     try {
-      doSign(privateKey, id);
+      await callbacks.signerDoProcess(CurrencyRegistry.Bitcoin, privateKey, id);
     } catch (e) {
-
+      res.status(500).json({ error: "error"})
+      return;
     }
-    res.json('TODO');
+    res.json('ok');
     // const privateKey = Utils.calPrivateKey()
     //TODO
   } 
@@ -161,7 +165,7 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
     const connection = getConnection();
     try {
       const response = await Utils.approveTransaction(toAddress, amount, coin, currency, connection);
-      if (!response) {
+      if (response) {
         return res.json(response);
       }
       res.json('dont have wallet');

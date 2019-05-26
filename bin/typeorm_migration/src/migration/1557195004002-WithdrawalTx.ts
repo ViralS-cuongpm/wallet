@@ -13,17 +13,7 @@ export class WithdrawalTx1557195004002 implements MigrationInterface {
             isGenerated: true,
             generationStrategy: 'increment',
             isPrimary: true,
-          },
-          {
-            name: 'user_id',
-            type: 'int',
-            isNullable: false,
-          },
-          {
-            name: 'wallet_id',
-            type: 'int',
-            isNullable: false,
-          },
+          },    
           {
             name: 'hot_wallet_address',
             type: 'varchar',
@@ -34,6 +24,7 @@ export class WithdrawalTx1557195004002 implements MigrationInterface {
             type: 'varchar',
             length: '100',
             isUnique: true,
+            isNullable: true
           },
           {
             name: 'currency',
@@ -57,33 +48,40 @@ export class WithdrawalTx1557195004002 implements MigrationInterface {
           {
             name: 'block_number',
             type: 'bigint',
+            isNullable: true,
           },
           {
             name: 'block_hash',
             type: 'varchar',
             length: '100',
+            isNullable: true,
           },
           {
             name: 'block_timestamp',
             type: 'bigint',
+            isNullable: true,
           },
           {
             name: 'fee_amount',
             type: 'decimal',
             precision: 40,
             scale: 8,
+            isNullable: true,
           },
           {
             name: 'fee_currency',
             type: 'varchar',
+            isNullable: true,
           },
           {
             name: 'unsigned_raw',
             type: 'text',
+            isNullable: true,
           },
           {
             name: 'signed_raw',
             type: 'text',
+            isNullable: true,
           },
           {
             name: 'created_at',

@@ -12,12 +12,6 @@ export class WithdrawalTx {
   @PrimaryGeneratedColumn()
   public id: number;
 
-  @Column('int', { name: 'user_id', nullable: false })
-  public userId: number;
-
-  @Column('int', { name: 'wallet_id', nullable: false })
-  public walletId: number;
-
   @Column('varchar', { name: 'hot_wallet_address', nullable: false })
   public hotWalletAddress: string;
 
@@ -39,19 +33,19 @@ export class WithdrawalTx {
   @Column('text', { name: 'signed_raw', nullable: true })
   public signedRaw: string | null;
 
-  @Column({ name: 'block_number', nullable: false })
+  @Column({ name: 'block_number', nullable: true })
   public blockNumber: number;
 
-  @Column({ name: 'block_hash', nullable: false })
+  @Column({ name: 'block_hash', nullable: true })
   public blockHash: string;
 
-  @Column({ name: 'block_timestamp', nullable: false })
+  @Column({ name: 'block_timestamp', nullable: true })
   public blockTimestamp: number;
 
-  @Column({ name: 'fee_amount', nullable: false })
+  @Column({ name: 'fee_amount', nullable: true })
   public feeAmount: string;
 
-  @Column({ name: 'fee_currency', nullable: false })
+  @Column({ name: 'fee_currency', nullable: true })
   public feeCurrency: string;
 
   @Column({ name: 'created_at', type: 'bigint' })

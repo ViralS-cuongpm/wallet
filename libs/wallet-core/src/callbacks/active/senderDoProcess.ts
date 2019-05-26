@@ -53,19 +53,24 @@ async function _senderDoProcess(manager: EntityManager, sender: BasePlatformWork
   // If transaction has valid is, not the temporary one
   // We'll check whether its status is determined or not on the network
   if (signedRecord.txid.indexOf(prefix) === -1) {
-    const status = await gateway.getTransactionStatus(txid);
-
+    try {
+      const status = await gateway.getTransactionStatus(txid);
+      if (status === TransactionStatus.COMPLETED || status === TransactionStatus.CONFIRMING) {
+        updateWithdrawalAndWithdrawalTx(manager, signedRecord, txid, WithdrawalStatus.SENT);
+        return;
+      }
+  
+      // If transaction is determined as failed, the withdrawal is failed as well
+      if (status === TransactionStatus.FAILED) {
+        updateWithdrawalAndWithdrawalTx(manager, signedRecord, txid, WithdrawalStatus.FAILED);
+        return;
+      }      
+    } catch (e) {
+      const status = TransactionStatus.UNKNOWN;
+      // updateWithdrawalAndWithdrawalTx(manager, signedRecord, txid, WithdrawalStatus.FAILED);      
+    }
     // If transaction status is completed or confirming, both mean the withdrawal was submitted to network successfully
-    if (status === TransactionStatus.COMPLETED || status === TransactionStatus.CONFIRMING) {
-      updateWithdrawalAndWithdrawalTx(manager, signedRecord, txid, WithdrawalStatus.SENT);
-      return;
-    }
 
-    // If transaction is determined as failed, the withdrawal is failed as well
-    if (status === TransactionStatus.FAILED) {
-      updateWithdrawalAndWithdrawalTx(manager, signedRecord, txid, WithdrawalStatus.FAILED);
-      return;
-    }
   }
 
   // for unknown transaction or temporary transaction
