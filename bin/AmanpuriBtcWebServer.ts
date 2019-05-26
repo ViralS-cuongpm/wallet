@@ -18,6 +18,7 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
     const pass: string = req.body.pass;
     const amount: number = req.body.amount;
     const nameCoin: string = req.params.currency.toString();
+    //check
     if (!nameCoin) {
       res.status(400).json({ error: "Lack currency"})
       return;
@@ -169,6 +170,7 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
     }
   }
 
+  //get plaform
   getCurrency(coin:string) {
     if (coin === 'usdt') {
       return 'btc';
@@ -176,10 +178,12 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
     return null;
   }
 
+  //handle get network enviroment
   getNetwork() {
     return 'testnet';//TODO
   }
 
+  //get name of usdt in blockchain network
   getCoin(coin:string) {
     if (coin === 'usdt') {
       return 'omni.2';
@@ -190,6 +194,7 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
   protected setup() {
     super.setup();
     this.app.use(bodyParser.json());
+    //api create addresses
     this.app.post('/api/:currency/address', async (req, res) => {
       try {
         await this.createNewAddress(req, res);
@@ -198,15 +203,7 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
         res.status(500).json({ error: e.message || e.toString() });
       }
     });  
-    
-    this.app.post('/api/:currency/withdrawal', async (req, res) => {
-      try {
-        await this.signTransaction(req, res);
-      } catch (e) {
-        logger.error(`createNewAddress err=${util.inspect(e)}`);
-        res.status(500).json({ error: e.message || e.toString() });
-      }
-    });        
+    //api sign transaction
     this.app.post('/api/:currency/withdrawal/accept', async (req, res) => {
       try {
         await this.signTransaction(req, res);
@@ -215,6 +212,7 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
         res.status(500).json({ error: e.message || e.toString() });
       }
     });      
+    //api insert db to pick
     this.app.post('/api/:currency/withdrawal/approve', async (req, res) => {
       try {
         await this.approveTransaction(req, res);
