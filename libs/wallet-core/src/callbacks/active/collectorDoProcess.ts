@@ -86,9 +86,9 @@ async function _constructUtxoBasedCollectTx(deposits: Deposit[], toAddress: stri
           weirdVouts.push(vout);
           return;
         }
-
+        
         const utxo = allAddressUtxos.find(u => {
-          return u.txid === txid && u.addresss === depositAddress && u.vout === vout.n;
+          return u.txid === txid && u.address === depositAddress && u.vout === vout.n;
         });
 
         // Double check. Something went wrong here as well. The output has been spent.

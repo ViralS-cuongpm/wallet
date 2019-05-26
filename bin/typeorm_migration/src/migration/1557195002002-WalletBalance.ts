@@ -82,13 +82,13 @@ export class WalletBalance1557195002002 implements MigrationInterface {
       `INSERT INTO ${tableName} ` +
         '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
         ' VALUES ' +
-        `('1001', 'btc', 1557636432024, 1557636432024)`
+        `('1002', 'btc', 1557636432024, 1557636432024)`
     );
     await queryRunner.query(
       `INSERT INTO ${tableName} ` +
         '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
         ' VALUES ' +
-        `('1001', 'omni.2', 1557636432024, 1557636432024)`
+        `('1002', 'omni.2', 1557636432024, 1557636432024)`
     );
   }
   public async down(queryRunner: QueryRunner): Promise<any> {

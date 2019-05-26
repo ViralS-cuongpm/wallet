@@ -16,7 +16,7 @@ export class MasterPrivateKey {
   public passwordHash: string;
 
   @Column({ name: 'wallet_id', nullable: false })
-  public walletId: string;
+  public walletId: number;
 
   @Column({ name: 'created_at' })
   public createdAt: number;

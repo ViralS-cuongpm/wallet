@@ -67,6 +67,18 @@ export class Withdrawal1557195004001 implements MigrationInterface {
             length: '20',
           },
           {
+            name: 'hash_check',
+            type: 'varchar',
+            isNullable: false,
+            length: '255',
+          },          
+          {
+            name: 'kms_data_key_id',
+            type: 'int',
+            isNullable: false,
+            length: '20',
+          },          
+          {
             name: 'created_at',
             type: 'bigint',
           },

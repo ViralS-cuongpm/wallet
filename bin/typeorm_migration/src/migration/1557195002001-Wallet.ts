@@ -62,7 +62,7 @@ export class Wallet1557195002001 implements MigrationInterface {
       `INSERT INTO ${tableName} ` +
         '(`id`, `user_id`, `label`, `currency`, `secret`, `is_hd`, `created_at`, `updated_at`)' +
         ' VALUES ' +
-        `('1001', '1', 'Dummy BTC Wallet', 'btc', 'dummy', 1, 1557636432024, 1557636432024)`
+        `('1002', '1', 'Default', 'btc', 'default', 1, 1557636432024, 1557636432024)`
     );
   }
 

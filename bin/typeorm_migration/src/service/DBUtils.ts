@@ -1,12 +1,14 @@
 import { EntityManager, In, LessThan, Not } from 'typeorm';
 import { MasterPrivateKey } from '../entity';
-import { createConnection, getConnection } from 'wallet-core/node_modules/typeorm';
-import { Wallet, Address, HotWallet } from 'wallet-core/src/entities';
+import { createConnection, getConnection, Connection } from 'wallet-core/node_modules/typeorm';
+import { Wallet, Address, HotWallet, WalletBalance } from 'wallet-core/src/entities';
+import { userId, walletId, UNSIGNED, kmsId, indexOfHotWallet, path } from './Const';
+import { Withdrawal } from '../../../../libs/wallet-core/src/entities';
 
 const passwordHash = require('password-hash');
 
-export async function checkPrivateKeyDB (currency: string) {
-  let masterPrivateKey = await getConnection().getRepository(MasterPrivateKey).findOne({
+export async function checkPrivateKeyDB (currency: string, connection: Connection) {
+  let masterPrivateKey = await connection.getRepository(MasterPrivateKey).findOne({
     where: {
       currency: currency,      
     }
@@ -17,8 +19,8 @@ export async function checkPrivateKeyDB (currency: string) {
   return true;
 }
 
-export async function checkPasswordDB (currency: string, pass: string) {
-  let masterPrivateKey = await getConnection().getRepository(MasterPrivateKey).findOne({
+export async function checkPasswordDB (currency: string, pass: string, connection: Connection) {
+  let masterPrivateKey = await connection.getRepository(MasterPrivateKey).findOne({
     where: {
       currency: currency
     }
@@ -29,7 +31,7 @@ export async function checkPasswordDB (currency: string, pass: string) {
   return true;
 }  
 
-export async function saveAddresses(addresses: string[], walletId: number, currency: string, index: number, path: string) {
+export async function saveAddresses(addresses: string[], currency: string, index: number, path: string,connection: Connection) {
   let count = index;
   addresses.forEach(async address => {
     let newAddress = new Address();
@@ -41,12 +43,12 @@ export async function saveAddresses(addresses: string[], walletId: number, curre
     newAddress.isExternal = false;
     newAddress.isHd = true;
     count ++;
-    await getConnection().getRepository(Address).save(newAddress);    
+    await connection.getRepository(Address).save(newAddress);    
   })
 }
 
-export async function getPrivateKey(currency: string) {
-  let masterPrivateKey = await getConnection().getRepository(MasterPrivateKey).findOne({
+export async function getPrivateKey(currency: string, connection: Connection) {
+  let masterPrivateKey = await connection.getRepository(MasterPrivateKey).findOne({
     where: {
       currency: currency,
     }
@@ -60,8 +62,9 @@ export async function getPrivateKey(currency: string) {
   return null;
 }
 
-export async function saveMasterPrivateKey(encrypted: string, currency: string, password: string, walletId: string) {
-  let masterPrivateKey = await getConnection().getRepository(MasterPrivateKey).findOne({
+export async function saveMasterPrivateKey(encrypted: string, currency: string, password: string, connection: Connection) {
+  const masterPrivateKeyRepo = connection.getRepository(MasterPrivateKey);
+  let masterPrivateKey = await masterPrivateKeyRepo.findOne({
     where: {
       currency: currency,
     }
@@ -72,12 +75,13 @@ export async function saveMasterPrivateKey(encrypted: string, currency: string, 
     masterPrivateKey.encrypted = encrypted;
     masterPrivateKey.passwordHash = passwordHash.generate(password);
     masterPrivateKey.currency = currency;
-    await getConnection().getRepository(MasterPrivateKey).save(masterPrivateKey);
+    await masterPrivateKeyRepo.save(masterPrivateKey);
   }
 }
 
-export async function createWallet(currency: string, userId: number) {
-  let wallet = await getConnection().getRepository(Wallet).findOne({
+export async function createWallet(currency: string, connection: Connection) {
+  const walletRepo = connection.getRepository(Wallet);
+  let wallet = await walletRepo.findOne({
     where: {
       currency: currency,
     }
@@ -85,17 +89,18 @@ export async function createWallet(currency: string, userId: number) {
   if(!wallet) {
     wallet = new Wallet();
     wallet.userId = userId;
-    wallet.label = currency;
+    wallet.label = 'Default';
     wallet.currency = currency;
     wallet.secret = "dummy";
     wallet.isHd = true;
-    await getConnection().getRepository(Wallet).save(wallet);
+    await walletRepo.save(wallet);
   }  
   return wallet.id;
 }
 
-export async function saveHotWallet(walletId: number, userId: number, address: string, currency: string) {
-  let hotWallet = await getConnection().getRepository(HotWallet).findOne({
+export async function saveHotWallet(address: string, currency: string, connection: Connection) {
+  const hotWalletRepo = connection.getRepository(HotWallet);
+  let hotWallet = await hotWalletRepo.findOne({
     where: {
       userId: userId,
       currency: currency,
@@ -110,6 +115,45 @@ export async function saveHotWallet(walletId: number, userId: number, address: s
     hotWallet.currency = currency;
     hotWallet.secret = '0';
     hotWallet.type = 'normal';
-    await getConnection().getRepository(HotWallet).save(hotWallet);
+    await hotWalletRepo.save(hotWallet);
   }  
+  const hotWalletaddress = await connection.getRepository(Address).findOne({
+    where: {
+      address: hotWallet.address,
+      walletId: walletId,
+      currency: currency,
+      userId: userId
+    }
+  });
+  if (!hotWalletaddress) {
+    saveAddresses([hotWallet.address], currency, indexOfHotWallet, path, connection);
+  }
+}
+
+export async function findWalletBalance(coin: string, connection: Connection) {
+  let walletBalance = await connection.getRepository(WalletBalance).findOne({
+    where: {
+      userId: userId,
+      coin: coin,
+      walletId: walletId,
+    }
+  })
+  return walletBalance;
+}
+
+export async function insertWithdrawalRecord(toAddress: string, amount: number, coin: string, connection: Connection){
+  let withdrawal = new Withdrawal();
+  withdrawal.userId = userId;
+  withdrawal.walletId = walletId;
+  withdrawal.txid = `TMP_WITHDRAWAL_TX` + toAddress + Date.now().toString();
+  withdrawal.currency = coin,
+  // sub_currency: subcoin,
+  withdrawal.fromAddress = 'TMP_ADDRESS';
+  withdrawal.toAddress = toAddress;
+  withdrawal.amount = amount.toString();
+  withdrawal.status = UNSIGNED,
+  withdrawal.hashCheck = 'TMP_HASHCHECK';
+  withdrawal.kmsDataKeyId = kmsId;  
+  await connection.getRepository(Withdrawal).save(withdrawal);
+  return 'ok';
 }
