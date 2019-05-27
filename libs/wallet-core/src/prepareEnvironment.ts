@@ -3,6 +3,7 @@ import { getLogger, BlockchainPlatform, CurrencyRegistry, EnvConfigRegistry } fr
 import { CurrencyConfig, EnvConfig } from './entities';
 import _ from 'lodash';
 import { OmniToken } from './entities/OmniToken';
+import { EosToken } from './entities/EosToken';
 
 const logger = getLogger('prepareEnvironment');
 
@@ -28,15 +29,12 @@ export async function prepareEnvironment(): Promise<void> {
   const connection = getConnection();
   logger.info(`Loading environment configurations from database...`);
 
-  const [currencyConfigs, envConfigs, omniTokens] = await Promise.all([
+  const [currencyConfigs, envConfigs, omniTokens, eosTokens] = await Promise.all([
     connection.getRepository(CurrencyConfig).find({}),
     connection.getRepository(EnvConfig).find({}),
     connection.getRepository(OmniToken).find({}),
+    connection.getRepository(EosToken).find({}),
   ]);
-
-  omniTokens.forEach(token => {
-    CurrencyRegistry.registerOmniAsset(token.propertyId, token.symbol, token.name, token.scale);
-  });
 
   currencyConfigs.forEach(config => {
     if (!CurrencyRegistry.hasOneCurrency(config.currency)) {
@@ -49,6 +47,14 @@ export async function prepareEnvironment(): Promise<void> {
 
   envConfigs.forEach(config => {
     EnvConfigRegistry.setCustomEnvConfig(config.key, config.value);
+  });
+
+  omniTokens.forEach(token => {
+    CurrencyRegistry.registerOmniAsset(token.propertyId, token.symbol, token.name, token.scale);
+  });
+
+  eosTokens.forEach(token => {
+    CurrencyRegistry.registerEosToken(token.code, token.symbol, token.scale);
   });
 
   logger.info(`Environment has been setup successfully...`);
