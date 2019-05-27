@@ -36,6 +36,10 @@ export async function prepareEnvironment(): Promise<void> {
     connection.getRepository(EosToken).find({}),
   ]);
 
+  omniTokens.forEach(token => {
+    CurrencyRegistry.registerOmniAsset(token.propertyId, token.symbol, token.name, token.scale);
+  });
+
   currencyConfigs.forEach(config => {
     if (!CurrencyRegistry.hasOneCurrency(config.currency)) {
       return;
@@ -47,10 +51,6 @@ export async function prepareEnvironment(): Promise<void> {
 
   envConfigs.forEach(config => {
     EnvConfigRegistry.setCustomEnvConfig(config.key, config.value);
-  });
-
-  omniTokens.forEach(token => {
-    CurrencyRegistry.registerOmniAsset(token.propertyId, token.symbol, token.name, token.scale);
   });
 
   eosTokens.forEach(token => {
