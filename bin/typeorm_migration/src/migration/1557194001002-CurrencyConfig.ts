@@ -83,7 +83,7 @@ export class CurrencyConfig1557194001002 implements MigrationInterface {
       `INSERT INTO ${tableName} ` +
         '(`currency`, `network`, `chain_id`, `chain_name`, `average_block_time`, `required_confirmations`, `internal_endpoint`, `rpc_endpoint`, `rest_endpoint`, `explorer_endpoint`, `created_at`, `updated_at`)' +
         ' VALUES ' +
-        `('eos', 'testnet', '5fff1dae8dc8e2fc4d5b23b2c7665c97f9e9d8edf2b6485a86ba311c25639191', 'Kylin', 15000, 6, 'http://localhost:47013', '', 'https://api-kylin.eoslaomao.com', '', 1557636432024, 1557636432024)`
+        `('eos', 'testnet', '5fff1dae8dc8e2fc4d5b23b2c7665c97f9e9d8edf2b6485a86ba311c25639191', 'Kylin', 15000, 6, 'http://localhost:47013', '', 'https://api.kylin.alohaeos.com', '', 1557636432024, 1557636432024)`
     );
   }
 
