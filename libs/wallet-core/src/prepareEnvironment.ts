@@ -4,6 +4,7 @@ import { CurrencyConfig, EnvConfig } from './entities';
 import _ from 'lodash';
 import { OmniToken } from './entities/OmniToken';
 import { EosToken } from './entities/EosToken';
+import { settleEnvironment } from '../../sota-common';
 
 const logger = getLogger('prepareEnvironment');
 
@@ -36,27 +37,28 @@ export async function prepareEnvironment(): Promise<void> {
     connection.getRepository(EosToken).find({}),
   ]);
 
-  currencyConfigs.forEach(config => {
-    if (!CurrencyRegistry.hasOneCurrency(config.currency)) {
-      return;
-    }
-
-    const currency = CurrencyRegistry.getOneCurrency(config.currency);
-    CurrencyRegistry.setCurrencyConfig(currency, config);
-  });
-
   envConfigs.forEach(config => {
     EnvConfigRegistry.setCustomEnvConfig(config.key, config.value);
-  });
-
-  omniTokens.forEach(token => {
-    CurrencyRegistry.registerOmniAsset(token.propertyId, token.symbol, token.name, token.scale);
   });
 
   eosTokens.forEach(token => {
     CurrencyRegistry.registerEosToken(token.code, token.symbol, token.scale);
   });
 
+  omniTokens.forEach(token => {
+    CurrencyRegistry.registerOmniAsset(token.propertyId, token.symbol, token.name, token.scale);
+  });
+
+  currencyConfigs.forEach(config => {
+    if (!CurrencyRegistry.hasOneCurrency(config.currency)) {
+      throw new Error(`There's config for unknown currency: ${config.currency}`);
+    }
+
+    const currency = CurrencyRegistry.getOneCurrency(config.currency);
+    CurrencyRegistry.setCurrencyConfig(currency, config);
+  });
+
+  await settleEnvironment();
   logger.info(`Environment has been setup successfully...`);
   return;
 }
