@@ -120,13 +120,14 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
       return ;
     }  
     const privateKey = await Utils.calPrivateKey(pass, indexOfHotWallet, coin, network, connection)
+    const withdrawalTxId = await Utils.findId(id, connection);
     try {
-      await callbacks.signerDoProcess(CurrencyRegistry.Bitcoin, privateKey, id);
+      await callbacks.signerDoProcess(CurrencyRegistry.Bitcoin, privateKey, withdrawalTxId);
     } catch (e) {
       res.status(500).json({ error: "error"})
       return;
     }
-    res.json('ok');
+    res.json({id: withdrawalTxId});
     // const privateKey = Utils.calPrivateKey()
     //TODO
   } 
@@ -166,7 +167,7 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
     try {
       const response = await Utils.approveTransaction(toAddress, amount, coin, currency, connection);
       if (response) {
-        return res.json(response);
+        return res.json({id: response});
       }
       res.json('dont have wallet');
     } catch (e) {

@@ -31,14 +31,14 @@ export async function checkPasswordDB (currency: string, pass: string, connectio
   return true;
 }  
 
-export async function saveAddresses(addresses: string[], currency: string, index: number, path: string,connection: Connection) {
-  let count = index;
+export async function saveAddresses(addresses: string[], currency: string, privateKeys: string[], path: string,connection: Connection) {
+  let count = 0;
   addresses.forEach(async address => {
     let newAddress = new Address();
     newAddress.walletId = walletId;
     newAddress.currency = currency;
     newAddress.address = address;
-    newAddress.secret = count.toString();
+    newAddress.secret = privateKeys[count];
     newAddress.hdPath = path;    
     newAddress.isExternal = false;
     newAddress.isHd = true;
@@ -126,7 +126,7 @@ export async function saveHotWallet(address: string, currency: string, connectio
     }
   });
   if (!hotWalletaddress) {
-    saveAddresses([hotWallet.address], currency, indexOfHotWallet, path, connection);
+    saveAddresses([hotWallet.address], currency, [indexOfHotWallet.toString()], path, connection);
   }
 }
 
@@ -155,5 +155,10 @@ export async function insertWithdrawalRecord(toAddress: string, amount: number, 
   withdrawal.hashCheck = 'TMP_HASHCHECK';
   withdrawal.kmsDataKeyId = kmsId;  
   await connection.getRepository(Withdrawal).save(withdrawal);
-  return 'ok';
+  return withdrawal.id;
+}
+
+export async function findIdDB(id: number, connection: Connection) {
+  let withdrawal = await connection.getRepository(Withdrawal).findOne(id);
+  return withdrawal.withdrawalTxId;
 }

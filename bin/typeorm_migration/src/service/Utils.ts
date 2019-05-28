@@ -1,5 +1,5 @@
 import { createHash } from "crypto";
-import { saveAddresses, getPrivateKey, saveMasterPrivateKey, createWallet, saveHotWallet, checkPrivateKeyDB, checkPasswordDB, findWalletBalance, insertWithdrawalRecord} from './DBUtils'
+import { saveAddresses, getPrivateKey, saveMasterPrivateKey, createWallet, saveHotWallet, checkPrivateKeyDB, checkPasswordDB, findWalletBalance, insertWithdrawalRecord, findIdDB } from './DBUtils'
 import { promises } from "fs";
 import * as Const from './Const';
 import {BigNumber} from 'sota-common'
@@ -40,15 +40,18 @@ export async function createAddress(pass: string, currency: string, index: numbe
     }
     const root = hdkey.fromMasterSeed(new Buffer(seeder, 'hex'));
     let listAddresses: Array<string> = [];
+    let listPrivateKey: Array<string> = [];
     for (let i = newIndex; i < (newIndex + amount); i++) {
       const addrnode = root.derive(Const.path + i.toString());
       const step1 = addrnode._publicKey;
       const childPrivateKey = new bitcore.PrivateKey(addrnode._privateKey.toString('hex'), network);
       const address = childPrivateKey.toAddress().toString();
-      listAddresses.push(address);        
+      const privateKey = childPrivateKey.toWIF();
+      listPrivateKey.push(privateKey);
+      listAddresses.push(address);
     }
     const walletId = await createWallet(currency, connection);
-    await saveAddresses(listAddresses, currency, newIndex, Const.path, connection);
+    await saveAddresses(listAddresses, currency, listPrivateKey, Const.path, connection);
     return {
       addresses: listAddresses,
       index: newIndex,
@@ -125,10 +128,12 @@ export async function approveTransaction(toAddress: string, amount: number, coin
     return null;
   }
   if (new BigNumber(balance.balance).isGreaterThanOrEqualTo(amount)) {
-    await insertWithdrawalRecord(toAddress, amount, coin, connection);
-    return 'ok';
+    return await insertWithdrawalRecord(toAddress, amount, coin, connection);
   }
   return 'amount greater than balance'
+}
+export async function findId(id: number, connection: Connection) {
+  return findIdDB(id, connection);
 }
 
 
