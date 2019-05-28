@@ -58,18 +58,18 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
     }
   
     try {
-      if (!await Utils.checkPrivateKey(coin, connection)) {
+      if (!await Utils.checkPrivateKey(currency, connection)) {
         await Utils.initWallet(pass, masterprivatekey, coin, currency, network, connection);
       }
-      if (!await Utils.checkPassword(pass, coin, connection)) {
+      if (!await Utils.checkPassword(pass, currency, connection)) {
         res.status(400).json({ error: "Invalid Password"});
         return ;
       }      
-      if (!await Utils.validatePrivateKey(coin, pass, masterprivatekey, connection)) {
+      if (!await Utils.validatePrivateKey(currency, pass, masterprivatekey, connection)) {
         res.status(400).json({ error: "Invalid MasterPrivateKey"});
         return ;
       }      
-      const address = await Utils.createAddress(pass, coin, index, amount, network, masterprivatekey, connection);
+      const address = await Utils.createAddress(pass, coin, index, amount, network, masterprivatekey, connection, currency);
       if (!address) {
         res.status(400).json({ error: "Dont have hd-wallet"});
         return;
@@ -115,12 +115,15 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
       return;
     }
     const connection = getConnection();
-    if (!await Utils.checkPassword(pass, coin, connection)) {
+    if (!await Utils.checkPassword(pass, currency, connection)) {
       res.status(400).json({ error: "Invalid Password"});
       return ;
     }  
-    const privateKey = await Utils.calPrivateKey(pass, indexOfHotWallet, coin, network, connection)
-    const withdrawalTxId = await Utils.findId(id, connection);
+    const privateKey = await Utils.calPrivateKey(pass, indexOfHotWallet, currency, network, connection)
+    const withdrawalTxId = await Utils.findId(id, connection);  
+    if (!withdrawalTxId) {
+      res.status(400).json({ error: "Unknow transactionTxId"});
+    } 
     try {
       await callbacks.signerDoProcess(CurrencyRegistry.Bitcoin, privateKey, withdrawalTxId);
     } catch (e) {

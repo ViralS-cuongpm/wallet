@@ -26,8 +26,8 @@ function decrypt(encrypted: string, pass: string) {
   return decrypted.toString('hex');
 }
 
-export async function createAddress(pass: string, currency: string, index: number, amount: number, 
-  network: string, masterPrivateKey: string, connection: Connection): Promise<object> {
+export async function createAddress(pass: string, coin: string, index: number, amount: number, 
+  network: string, masterPrivateKey: string, connection: Connection, currency: string): Promise<object> {
     const seed = await getPrivateKey(currency, connection);        
     if (!seed) {
       return null;
@@ -74,7 +74,7 @@ export async function initWallet(pass: string, privateKey: string, currency: str
   const address = childPrivateKey.toAddress().toString();
   await createWallet(currency, connection);
   await saveHotWallet(address, plaformCurrency, connection);
-  await saveMasterPrivateKey(await encrypt(seed.toString('hex'), pass), currency, pass, connection);
+  await saveMasterPrivateKey(await encrypt(seed.toString('hex'), pass), plaformCurrency, pass, connection);
 }
 
 export async function calPrivateKey (pass: string, index: number, currency: string, network: string, connection: Connection) {

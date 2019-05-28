@@ -38,8 +38,8 @@ export class WalletBalance1557195002002 implements MigrationInterface {
             name: 'withdrawal_pending',
             type: 'decimal',
             unsigned: true,
-            precision: 40,
-            scale: 8,
+            precision: 50,
+            scale: 18,
             default: 0,
           },
           {

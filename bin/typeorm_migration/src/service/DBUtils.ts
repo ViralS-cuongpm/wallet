@@ -160,5 +160,8 @@ export async function insertWithdrawalRecord(toAddress: string, amount: number, 
 
 export async function findIdDB(id: number, connection: Connection) {
   let withdrawal = await connection.getRepository(Withdrawal).findOne(id);
+  if (!withdrawal || withdrawal.status !== 'signing') {
+    return null;
+  }
   return withdrawal.withdrawalTxId;
 }
