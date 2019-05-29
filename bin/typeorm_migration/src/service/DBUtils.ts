@@ -3,7 +3,8 @@ import { MasterPrivateKey } from '../entity';
 import { createConnection, getConnection, Connection } from 'wallet-core/node_modules/typeorm';
 import { Wallet, Address, HotWallet, WalletBalance } from 'wallet-core/src/entities';
 import { userId, walletId, UNSIGNED, kmsId, indexOfHotWallet, path } from './Const';
-import { Withdrawal } from '../../../../libs/wallet-core/src/entities';
+import { Withdrawal, WalletLog } from '../../../../libs/wallet-core/src/entities';
+import { BigNumber } from 'sota-common';
 
 const passwordHash = require('password-hash');
 
@@ -158,9 +159,33 @@ export async function insertWithdrawalRecord(toAddress: string, amount: number, 
   return withdrawal.id;
 }
 
+export async function insertBalance(withdrawalId: number, currency: string, amount: number, connection: Connection) {
+  let walletBalance = await connection.getRepository(WalletBalance).findOne({
+    where: {
+      walletId: walletId,
+      currency: currency
+    }
+  })
+  walletBalance.withdrawalPending = (new BigNumber(walletBalance.withdrawalPending).plus(amount)).toString();
+  walletBalance.balance = (new BigNumber(walletBalance.balance).minus(amount)).toString();
+  let walletLog = new WalletLog();
+  walletLog.walletId = walletId;
+  walletLog.balanceChange = (-amount).toString();
+  walletLog.refId = withdrawalId;
+  walletLog.currency = currency;
+  walletLog.event = 'withdraw_request';
+  connection.getRepository(WalletLog).save(walletLog);
+  connection.getRepository(WalletBalance).save(walletBalance);
+}
+
 export async function findIdDB(id: number, connection: Connection) {
-  let withdrawal = await connection.getRepository(Withdrawal).findOne(id);
-  if (!withdrawal || withdrawal.status !== 'signing') {
+  let withdrawal = await connection.getRepository(Withdrawal).findOne({
+    where: {
+      id: id,
+      status: 'signing'
+    }
+  })
+  if (!withdrawal) {
     return null;
   }
   return withdrawal.withdrawalTxId;

@@ -1,5 +1,5 @@
 import { createHash } from "crypto";
-import { saveAddresses, getPrivateKey, saveMasterPrivateKey, createWallet, saveHotWallet, checkPrivateKeyDB, checkPasswordDB, findWalletBalance, insertWithdrawalRecord, findIdDB } from './DBUtils'
+import { saveAddresses, getPrivateKey, saveMasterPrivateKey, createWallet, saveHotWallet, checkPrivateKeyDB, checkPasswordDB, findWalletBalance, insertWithdrawalRecord, findIdDB, insertBalance } from './DBUtils'
 import { promises } from "fs";
 import * as Const from './Const';
 import {BigNumber} from 'sota-common'
@@ -128,7 +128,9 @@ export async function approveTransaction(toAddress: string, amount: number, coin
     return null;
   }
   if (new BigNumber(balance.balance).isGreaterThanOrEqualTo(amount)) {
-    return await insertWithdrawalRecord(toAddress, amount, coin, connection);
+    const withdrawalId = await insertWithdrawalRecord(toAddress, amount, coin, connection);
+    await insertBalance(withdrawalId, coin, amount, connection);
+    return withdrawalId;
   }
   return 'amount greater than balance'
 }
