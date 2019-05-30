@@ -1,7 +1,7 @@
 import { createHash } from "crypto";
-import { saveAddresses, getPrivateKey, saveMasterPrivateKey, createWallet, saveHotWallet, checkPrivateKeyDB, checkPasswordDB, findWalletBalance, insertWithdrawalRecord, findIdDB, insertBalance } from './DBUtils'
 import { promises } from "fs";
 import * as Const from './Const';
+import * as DBUtils from './DBUtils';
 import {BigNumber} from 'sota-common'
 import { Connection } from "typeorm";
 
@@ -28,7 +28,7 @@ function decrypt(encrypted: string, pass: string) {
 
 export async function createAddress(pass: string, coin: string, index: number, amount: number, 
   network: string, masterPrivateKey: string, connection: Connection, currency: string): Promise<object> {
-    const seed = await getPrivateKey(currency, connection);        
+    const seed = await DBUtils.getPrivateKey(currency, connection);        
     if (!seed) {
       return null;
     }
@@ -50,8 +50,7 @@ export async function createAddress(pass: string, coin: string, index: number, a
       listPrivateKey.push(privateKey);
       listAddresses.push(address);
     }
-    const walletId = await createWallet(currency, connection);
-    await saveAddresses(listAddresses, currency, listPrivateKey, Const.path, connection);
+    await DBUtils.saveAddresses(listAddresses, currency, listPrivateKey, Const.path, connection);
     return {
       addresses: listAddresses,
       index: newIndex,
@@ -72,13 +71,13 @@ export async function initWallet(pass: string, privateKey: string, currency: str
   const step1 = addrnode._publicKey;
   const childPrivateKey = new bitcore.PrivateKey(addrnode._privateKey.toString('hex'), network);
   const address = childPrivateKey.toAddress().toString();
-  await createWallet(currency, connection);
-  await saveHotWallet(address, plaformCurrency, connection);
-  await saveMasterPrivateKey(await encrypt(seed.toString('hex'), pass), plaformCurrency, pass, connection);
+  await DBUtils.createWallet(currency, connection);
+  await DBUtils.saveHotWallet(address, plaformCurrency, connection);
+  await DBUtils.saveMasterPrivateKey(await encrypt(seed.toString('hex'), pass), plaformCurrency, pass, connection);
 }
 
 export async function calPrivateKey (pass: string, index: number, currency: string, network: string, connection: Connection) {
-  const seed = await getPrivateKey(currency, connection);     
+  const seed = await DBUtils.getPrivateKey(currency, connection);     
   if (!seed.seed) {
     return null;
   }
@@ -100,21 +99,21 @@ function calIndex(number: number) {
 }
 
 export async function checkPassword(pass: string, currency: string, connection: Connection) {
-  if (await checkPasswordDB(currency, pass, connection)) {
+  if (await DBUtils.checkPasswordDB(currency, pass, connection)) {
     return true;
   }
   return false;
 }
 
 export async function checkPrivateKey(currency: string, connection: Connection) {
-  if (await checkPrivateKeyDB(currency, connection)) {
+  if (await DBUtils.checkPrivateKeyDB(currency, connection)) {
     return true;
   }
   return false;
 }
 
 export async function validatePrivateKey(currency: string, pass: string, masterPrivateKey: string, connection: Connection) {
-  const seed = await getPrivateKey(currency, connection);    
+  const seed = await DBUtils.getPrivateKey(currency, connection);    
   const seeder = decrypt(seed.seed, pass);
   if (seeder.toString() !== (await bip39.mnemonicToSeed(masterPrivateKey)).toString('hex')) {
     return false;
@@ -123,19 +122,27 @@ export async function validatePrivateKey(currency: string, pass: string, masterP
 }
 
 export async function approveTransaction(toAddress: string, amount: number, coin: string, currency: string, connection: Connection) {
-  const balance = await findWalletBalance(coin, connection);
+  const balance = await DBUtils.findWalletBalance(coin, connection);
   if (!balance) {
     return null;
   }
   if (new BigNumber(balance.balance).isGreaterThanOrEqualTo(amount)) {
-    const withdrawalId = await insertWithdrawalRecord(toAddress, amount, coin, connection);
-    await insertBalance(withdrawalId, coin, amount, connection);
+    const withdrawalId = await DBUtils.insertWithdrawalRecord(toAddress, amount, coin, connection);
+    await DBUtils.insertBalance(withdrawalId, coin, amount, connection);
     return withdrawalId;
   }
   return 'amount greater than balance'
 }
 export async function findId(id: number, connection: Connection) {
-  return findIdDB(id, connection);
+  return DBUtils.findIdDB(id, connection);
+}
+
+export async function findTxHash(id: number, connection: Connection) {
+  return DBUtils.findTxHashDB(id, connection);
+}
+
+export async function getNetwork(connection: Connection) {
+  return DBUtils.getNetworkDB(connection);
 }
 
 

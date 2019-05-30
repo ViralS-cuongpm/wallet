@@ -23,6 +23,7 @@ deps:
 	make dep t=bin
 	make dep t=bin/typeorm_migration
 	make dep t=bin/eos
+	make dep t=bin/btc
 
 ts-dep-reinstall:
 	cd $(t) && rm -rf node_modules package-lock.json && npm i
@@ -39,6 +40,7 @@ ts-deps:
 	make ts-dep-install t=bin
 	make ts-dep-install t=bin/typeorm_migration
 	make ts-dep-install t=bin/eos
+	make ts-dep-install t=bin/btc
 
 ts-deps-reinstall:
 	make ts-dep-reinstall t=./
@@ -49,6 +51,7 @@ ts-deps-reinstall:
 	make ts-dep-reinstall t=bin
 	make ts-dep-reinstall t=bin/typeorm_migration
 	make ts-dep-reinstall t=bin/eos
+	make ts-dep-reinstall t=bin/btc
 
 install:
 	make ts-deps

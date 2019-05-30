@@ -1,5 +1,6 @@
 export const userId= 1;
-export const walletId= 1002;
+export const usdtWalletId= 1002;
+export const eosWalletId= 1003;
 export const indexOfHotWallet= 0;
 export const path= "m/44'/0'/0'/0/";
 export const algorithm= 'aes-192-cbc';

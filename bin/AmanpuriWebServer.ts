@@ -9,14 +9,48 @@ import {callbacks} from 'wallet-core';
 import { indexOfHotWallet } from './typeorm_migration/src/service/Const';
 
 const logger = getLogger('BaseWebServer');
-export class AmanpuriBtcWebServer extends BtcWebServer {
-  /**
+export class AmanpuriWebServer extends BtcWebServer {
+
+  protected setup() {
+    super.setup();
+    this.app.use(bodyParser.json());
+    //api create addresses
+    this.app.post('/api/:currency/address', async (req, res) => {
+      try {
+        await this.createNewAddress(req, res);
+      } catch (e) {
+        logger.error(`createNewAddress err=${util.inspect(e)}`);
+        res.status(500).json({ error: e.message || e.toString() });
+      }
+    });  
+    //api insert db to pick
+    this.app.post('/api/:currency/withdrawal/approve', async (req, res) => {
+      try {
+        await this.approveTransaction(req, res);
+      } catch (e) {
+        logger.error(`createNewAddress err=${util.inspect(e)}`);
+        res.status(500).json({ error: e.message || e.toString() });
+      }
+    });      
+    //api sign transaction
+    this.app.post('/api/:currency/withdrawal/accept', async (req, res) => {
+      try {
+        await this.signTransaction(req, res);
+      } catch (e) {
+        logger.error(`createNewAddress err=${util.inspect(e)}`);
+        res.status(500).json({ error: e.message || e.toString() });
+      }
+    });      
+       
+  }  
+
+    /**
    * createAddress
    */
   
   public async createNewAddress(req: any, res: any) {
     const connection = getConnection();
-    const network: string = this.getNetwork();
+    const network: string = await  this.getNetwork(connection);
     const pass: string = req.body.pass;
     const amount: number = req.body.amount;
     const nameCoin: string = req.params.currency.toString();
@@ -90,7 +124,6 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
   } 
 
   protected async signTransaction(req: any, res: any) {
-    const network: string = this.getNetwork();
     const id: number = req.body.withdrawal_id;
     const pass: string = req.body.pass;
     const nameCoin: string = req.params.currency.toString();
@@ -115,17 +148,24 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
       return;
     }
     const connection = getConnection();
+    const network: string = await this.getNetwork(connection);
     if (!await Utils.checkPassword(pass, currency, connection)) {
       res.status(400).json({ error: "Invalid Password"});
       return ;
     }  
-    const privateKey = await Utils.calPrivateKey(pass, indexOfHotWallet, currency, network, connection)
+    let privateKey = pass;
+    let currencyRegistry = CurrencyRegistry.EOS;
+    if (currency === 'btc') {
+      currencyRegistry = CurrencyRegistry.Bitcoin;
+      privateKey = await Utils.calPrivateKey(pass, indexOfHotWallet, currency, network, connection)
+    }
     const withdrawalTxId = await Utils.findId(id, connection);  
     if (!withdrawalTxId) {
       res.status(400).json({ error: "Unknow transactionTxId"});
-    } 
+    }    
     try {
-      await callbacks.signerDoProcess(CurrencyRegistry.Bitcoin, privateKey, withdrawalTxId);
+      await callbacks.signerDoProcess(currencyRegistry, privateKey, withdrawalTxId);
+      const tx_hash = await Utils.findTxHash(withdrawalTxId, connection);
     } catch (e) {
       res.status(500).json({ error: "error"})
       return;
@@ -136,7 +176,6 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
   } 
 
   public async approveTransaction(req: any, res: any) {
-    const network: string = this.getNetwork();
     const toAddress: string = req.body.toAddress;
     const amount: number = req.body.amount;
     const nameCoin: string = req.params.currency.toString();
@@ -167,6 +206,7 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
       return;
     }
     const connection = getConnection();
+    const network: string = await this.getNetwork(connection);
     try {
       const response = await Utils.approveTransaction(toAddress, amount, coin, currency, connection);
       if (response) {
@@ -183,12 +223,15 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
     if (coin === 'usdt') {
       return 'btc';
     }
+    if (coin === 'eos') {
+      return 'eos'
+    }
     return null;
   }
 
   //handle get network enviroment
-  getNetwork() {
-    return 'testnet';//TODO
+  getNetwork(connection: Connection) {
+    return Utils.getNetwork(connection);//TODO
   }
 
   //get name of usdt in blockchain network
@@ -196,38 +239,10 @@ export class AmanpuriBtcWebServer extends BtcWebServer {
     if (coin === 'usdt') {
       return 'omni.2';
     }
+    if (coin === 'eos') {
+      return 'eos'
+    }    
     return null;
   }  
 
-  protected setup() {
-    super.setup();
-    this.app.use(bodyParser.json());
-    //api create addresses
-    this.app.post('/api/:currency/address', async (req, res) => {
-      try {
-        await this.createNewAddress(req, res);
-      } catch (e) {
-        logger.error(`createNewAddress err=${util.inspect(e)}`);
-        res.status(500).json({ error: e.message || e.toString() });
-      }
-    });  
-    //api sign transaction
-    this.app.post('/api/:currency/withdrawal/accept', async (req, res) => {
-      try {
-        await this.signTransaction(req, res);
-      } catch (e) {
-        logger.error(`createNewAddress err=${util.inspect(e)}`);
-        res.status(500).json({ error: e.message || e.toString() });
-      }
-    });      
-    //api insert db to pick
-    this.app.post('/api/:currency/withdrawal/approve', async (req, res) => {
-      try {
-        await this.approveTransaction(req, res);
-      } catch (e) {
-        logger.error(`createNewAddress err=${util.inspect(e)}`);
-        res.status(500).json({ error: e.message || e.toString() });
-      }
-    });         
-  }  
 }

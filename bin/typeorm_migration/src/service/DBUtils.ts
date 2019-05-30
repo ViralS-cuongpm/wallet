@@ -1,8 +1,8 @@
 import { EntityManager, In, LessThan, Not } from 'typeorm';
 import { MasterPrivateKey } from '../entity';
 import { createConnection, getConnection, Connection } from 'wallet-core/node_modules/typeorm';
-import { Wallet, Address, HotWallet, WalletBalance } from 'wallet-core/src/entities';
-import { userId, walletId, UNSIGNED, kmsId, indexOfHotWallet, path } from './Const';
+import { Wallet, Address, HotWallet, WalletBalance, WithdrawalTx, EnvConfig } from 'wallet-core/src/entities';
+import { userId, usdtWalletId, eosWalletId, UNSIGNED, kmsId, indexOfHotWallet, path } from './Const';
 import { Withdrawal, WalletLog } from '../../../../libs/wallet-core/src/entities';
 import { BigNumber } from 'sota-common';
 
@@ -33,6 +33,10 @@ export async function checkPasswordDB (currency: string, pass: string, connectio
 }  
 
 export async function saveAddresses(addresses: string[], currency: string, privateKeys: string[], path: string,connection: Connection) {
+  let walletId = usdtWalletId;
+  if (currency === 'eos') {
+    walletId = eosWalletId;
+  }
   let count = 0;
   addresses.forEach(async address => {
     let newAddress = new Address();
@@ -72,7 +76,7 @@ export async function saveMasterPrivateKey(encrypted: string, currency: string, 
   })
   if(!masterPrivateKey) {
     masterPrivateKey = new MasterPrivateKey();
-    masterPrivateKey.walletId = walletId;
+    masterPrivateKey.walletId = usdtWalletId;
     masterPrivateKey.encrypted = encrypted;
     masterPrivateKey.passwordHash = passwordHash.generate(password);
     masterPrivateKey.currency = currency;
@@ -100,6 +104,10 @@ export async function createWallet(currency: string, connection: Connection) {
 }
 
 export async function saveHotWallet(address: string, currency: string, connection: Connection) {
+  let walletId = usdtWalletId;
+  if (currency === 'eos') {
+    walletId = eosWalletId;
+  }  
   const hotWalletRepo = connection.getRepository(HotWallet);
   let hotWallet = await hotWalletRepo.findOne({
     where: {
@@ -132,6 +140,10 @@ export async function saveHotWallet(address: string, currency: string, connectio
 }
 
 export async function findWalletBalance(coin: string, connection: Connection) {
+  let walletId = usdtWalletId;
+  if (coin === 'eos') {
+    walletId = eosWalletId;
+  }  
   let walletBalance = await connection.getRepository(WalletBalance).findOne({
     where: {
       userId: userId,
@@ -143,6 +155,10 @@ export async function findWalletBalance(coin: string, connection: Connection) {
 }
 
 export async function insertWithdrawalRecord(toAddress: string, amount: number, coin: string, connection: Connection){
+  let walletId = usdtWalletId;
+  if (coin === 'eos') {
+    walletId = eosWalletId;
+  }  
   let withdrawal = new Withdrawal();
   withdrawal.userId = userId;
   withdrawal.walletId = walletId;
@@ -160,6 +176,10 @@ export async function insertWithdrawalRecord(toAddress: string, amount: number, 
 }
 
 export async function insertBalance(withdrawalId: number, currency: string, amount: number, connection: Connection) {
+  let walletId = usdtWalletId;
+  if (currency === 'eos') {
+    walletId = eosWalletId;
+  }  
   let walletBalance = await connection.getRepository(WalletBalance).findOne({
     where: {
       walletId: walletId,
@@ -189,4 +209,24 @@ export async function findIdDB(id: number, connection: Connection) {
     return null;
   }
   return withdrawal.withdrawalTxId;
+}
+
+export async function findTxHashDB(id: number, connection: Connection) {
+  let withdrawalTx = await connection.getRepository(WithdrawalTx).findOne(id);
+  if (!withdrawalTx) {
+    return null;
+  }
+  return withdrawalTx.txid;
+}
+
+export async function getNetworkDB(connection: Connection) {
+  let env = await connection.getRepository(EnvConfig).findOne({
+    where: {
+      key: 'network'
+    }
+  });
+  if (!env) {
+    return null;
+  }
+  return env.value;  
 }

@@ -1,7 +1,7 @@
 import 'sota-btc';
 import { BaseCoinCollector, prepareEnvironment, callbacks } from 'wallet-core';
 import { ICurrencyWorkerOptions, BlockchainPlatform } from 'sota-common';
-import { collectorDoProcess } from '../libs/wallet-core/src/callbacks';
+import { collectorDoProcess } from 'wallet-core/src/callbacks';
 
 prepareEnvironment()
   .then(start)

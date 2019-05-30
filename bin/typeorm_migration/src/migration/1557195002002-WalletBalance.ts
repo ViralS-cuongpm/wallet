@@ -90,6 +90,12 @@ export class WalletBalance1557195002002 implements MigrationInterface {
         ' VALUES ' +
         `('1002', 'omni.2', 1557636432024, 1557636432024)`
     );
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
+        ' VALUES ' +
+        `('1003', 'eos', 1557636432024, 1557636432024)`
+    );    
   }
   public async down(queryRunner: QueryRunner): Promise<any> {
     await queryRunner.dropTable(process.env.TYPEORM_PREFIX + 'wallet_balance');

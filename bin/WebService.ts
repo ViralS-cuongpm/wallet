@@ -1,6 +1,6 @@
 import { BtcWebServer } from 'sota-btc';
 import { prepareEnvironment } from 'wallet-core';
-import { AmanpuriBtcWebServer } from './AmanpuriBtcWebServer';
+import { AmanpuriWebServer } from './AmanpuriWebServer';
 
 prepareEnvironment()
   .then(start)
@@ -10,6 +10,6 @@ prepareEnvironment()
   });
 
 function start(): void {
-  const worker = new AmanpuriBtcWebServer();
+  const worker = new AmanpuriWebServer();
   worker.start();
 }
