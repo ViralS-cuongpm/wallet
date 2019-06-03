@@ -7,3 +7,9 @@
 [submodule "libs/sota-eos"]
 	path = libs/sota-eos
 	url = git@github.com:sotatek-dev/s-wallet-eos-base.git
+[submodule "libs/sota-ltc"]
+	path = libs/sota-ltc
+	url = git@github.com:sotatek-dev/s-wallet-ltc-base.git
+[submodule "libs/sota-bch"]
+	path = libs/sota-bch
+	url = git@github.com:sotatek-dev/s-wallet-bch-base.git
