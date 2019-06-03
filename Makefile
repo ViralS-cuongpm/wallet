@@ -22,7 +22,8 @@ deps:
 	make dep t=libs/wallet-core
 	make dep t=bin/eos
 	make dep t=bin/btc
-	make dep t=bin
+	make dep t=bin/bch
+	make dep t=bin/ltc
 	make dep t=bin/typeorm_migration
 
 ts-dep-reinstall:
@@ -38,8 +39,9 @@ ts-deps:
 	make ts-dep-install t=libs/sota-eos
 	make ts-dep-install t=libs/wallet-core
 	make ts-dep-install t=bin/btc
+	make ts-dep-install t=bin/bch
+	make ts-dep-install t=bin/ltc
 	make ts-dep-install t=bin/eos
-	make ts-dep-install t=bin
 	make ts-dep-install t=bin/typeorm_migration
 
 ts-deps-reinstall:
@@ -47,11 +49,12 @@ ts-deps-reinstall:
 	make ts-dep-reinstall t=libs/sota-common
 	make ts-dep-reinstall t=libs/sota-btc
 	make ts-dep-reinstall t=libs/sota-eos
-	make ts-dep-reinstall t=bin
+	make ts-dep-reinstall t=libs/wallet-core
 	make ts-dep-reinstall t=bin/typeorm_migration
 	make ts-dep-reinstall t=bin/eos
 	make ts-dep-reinstall t=bin/btc
-	make ts-dep-reinstall t=libs/wallet-core
+	make ts-dep-reinstall t=bin/bch
+	make ts-dep-reinstall t=bin/ltc
 
 install:
 	make ts-deps

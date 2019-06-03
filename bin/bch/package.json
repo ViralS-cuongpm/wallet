@@ -1,5 +1,5 @@
 {
-  "name": "exchange-wallet-btc",
+  "name": "exchange-wallet-bch",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,9 +11,9 @@
     "@types/morgan": "1.7.35",
     "express": "4.16.4",
     "morgan": "1.9.1",
-    "sota-btc": "../libs/sota-btc",
-    "sota-common": "../libs/sota-common",
-    "wallet-core": "../libs/wallet-core"
+    "sota-bch": "../../libs/sota-bch",
+    "sota-common": "../../libs/sota-common",
+    "wallet-core": "../../libs/wallet-core"
   },
   "author": "",
   "license": "ISC"

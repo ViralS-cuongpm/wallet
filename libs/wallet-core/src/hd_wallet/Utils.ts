@@ -1,21 +1,11 @@
-import { createHash } from 'crypto';
-import { promises } from 'fs';
 import * as Const from './Const';
 import * as DBUtils from './DBUtils';
 import { BigNumber, GatewayRegistry } from 'sota-common';
 import { EntityManager } from 'typeorm';
-import { HotWallet } from '../entities';
 
-// const bch = require('bitcoincashjs');
-const bchLib = require('bitcore-lib-cash');
-const bitcore = require('sota-btc/node_modules/bitcore-lib');
-const passwordHash = require('password-hash');
 const crypto = require('crypto');
-const assert = require('assert');
 const bip39 = require('bip39');
 const hdkey = require('hdkey');
-const bs58check = require('bs58check');
-const ethUtil = require('ethereumjs-util');
 
 export function encrypt(msg: string, pass: string) {
   const key = crypto.scryptSync(pass, 'salt', 24);
@@ -45,14 +35,12 @@ export async function createAddresses(
     throw new Error('This currency do not have wallet');
   }
   const count = await DBUtils.countAddresses(currency, connection);
-  const hotWallet = await createHotWallet(wallet.id, seed, currency, network, connection, path);
-  return await createAndSaveAddresses(wallet.id, seed, coin, count, amount, network, currency, connection);
+  return await createAndSaveAddresses(wallet.id, seed, count, amount, network, currency, connection);
 }
 
 export async function createAndSaveAddresses(
   walletId: number,
   seeder: string,
-  coin: string,
   index: number,
   amount: number,
   network: string,
@@ -60,9 +48,7 @@ export async function createAndSaveAddresses(
   connection: EntityManager
 ): Promise<string[]> {
   const newIndex = calIndex(index);
-  let type = 0x6f;
   if (network.toLocaleLowerCase() === 'mainnet') {
-    type = 0x00;
   }
   const seed = await bip39.mnemonicToSeed(seeder); // creates seed buffer
   const root = hdkey.fromMasterSeed(seed);
@@ -71,7 +57,6 @@ export async function createAndSaveAddresses(
   const path = await findPathCurrency(currency);
   for (let i = newIndex; i < newIndex + amount; i++) {
     const addrnode = root.derive(path + i.toString());
-    const step1 = addrnode._publicKey;
     const privateKey = addrnode._privateKey.toString('hex');
     const gateway = await GatewayRegistry.getGatewayInstance(currency);
     const address = await gateway.getAccountFromPrivateKey(privateKey);
@@ -90,14 +75,11 @@ export async function createHotWallet(
   connection: EntityManager,
   path: string
 ) {
-  let type = 0x6f;
   if (network.toLocaleLowerCase() === 'mainnet') {
-    type = 0x00;
   }
   const seed = await bip39.mnemonicToSeed(seeder); // creates seed buffer
   const root = hdkey.fromMasterSeed(seed);
   const addrnode = root.derive(path + Const.indexOfHotWallet.toString());
-  const step1 = addrnode._publicKey;
   let privateKey = addrnode._privateKey.toString('hex');
   const gateway = await GatewayRegistry.getGatewayInstance(currency);
   const address = await gateway.getAccountFromPrivateKey(privateKey);
@@ -105,8 +87,13 @@ export async function createHotWallet(
   await DBUtils.saveHotWallet(path, address.address, privateKey, currency, walletId, connection);
 }
 
-export async function calPrivateKeyHotWallet(address: string, currency: string, connection: EntityManager) {
+export async function calPrivateKeyHotWallet(
+  address: string,
+  currency: string,
+  connection: EntityManager
+): Promise<string> {
   const secretHotWallet = await DBUtils.findSecretHotWallet(address, currency, connection);
+  return secretHotWallet;
 }
 
 function calIndex(number: number) {
