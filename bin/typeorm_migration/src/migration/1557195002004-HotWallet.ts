@@ -1,4 +1,6 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
+import * as encrypt from '../service/encypt'
+const passwordHash = require('password-hash');
 
 export class HotWallet1557195002004 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<any> {
@@ -84,6 +86,21 @@ export class HotWallet1557195002004 implements MigrationInterface {
         columnNames: ['wallet_id'],
       })
     );
+    const eosEncrypted = encrypt.encrypt('c25efe39-c4d8-4831-8acb-0c1d868d62bd', 'eos');
+    const xrpEncrypted = encrypt.encrypt('sss8zr4GUwHheKWzBwSnuiRTES3QC', 'xrp');
+
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`user_id`, `wallet_id`, `address`, `currency`, `secret`, `type`, `created_at`, `updated_at`)' +
+        ' VALUES ' +
+        `('1', '1002', 'testamanpuri', 'eos', '${eosEncrypted}', 'normal', 1557636432024, 1557636432024)`
+    );    
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`user_id`, `wallet_id`, `address`, `currency`, `secret`, `type`, `created_at`, `updated_at`)' +
+        ' VALUES ' +
+        `('1', '1004', 'r91YMzJfKd3QKJXsU99RkeY9hte63RcLXc', 'xrp', '${xrpEncrypted}', 'normal', 1557636432024, 1557636432024)`
+    );       
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {

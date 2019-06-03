@@ -2,6 +2,7 @@ import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
 
 export class Address1557195001001 implements MigrationInterface {
   public async up(queryRunner: QueryRunner): Promise<any> {
+    const tableName = process.env.TYPEORM_PREFIX + 'address';
     await queryRunner.createTable(
       new Table({
         name: process.env.TYPEORM_PREFIX + 'address',
@@ -58,6 +59,18 @@ export class Address1557195001001 implements MigrationInterface {
         columnNames: ['address'],
       })
     );
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`wallet_id`, `currency`, `address`, `secret`, `hd_path`, `is_external`, `is_hd`, `created_at`, `updated_at`)' +
+        ' VALUES ' +
+        `('1002', 'eos', 'testamanpuri', '0', '0', 0, 0, 1557636432024, 1557636432024)`
+    );     
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`wallet_id`, `currency`, `address`, `secret`, `hd_path`, `is_external`, `is_hd`, `created_at`, `updated_at`)' +
+        ' VALUES ' +
+        `('1004', 'xrp', 'r91YMzJfKd3QKJXsU99RkeY9hte63RcLXc', '0', '0', 0, 0, 1557636432024, 1557636432024)`
+    );    
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {

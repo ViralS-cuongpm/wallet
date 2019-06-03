@@ -64,7 +64,16 @@
     "node-fetch": "2.5.0",
     "reflect-metadata": "0.1.12",
     "sota-common": "../sota-common",
+    "sota-btc": "../sota-btc",
     "typeorm": "0.2.17",
-    "typescript": "3.2.2"
+    "typescript": "3.2.2",
+    "password-hash": "^1.2.2",
+    "bitcoinjs-lib": "^5.0.3",
+    "bitcore-lib": "^8.3.3",
+    "bip39": "^3.0.1",
+    "bip39-ts": "^1.0.6",
+    "bs58check": "^2.1.2",
+    "create-hash": "^1.2.0",
+    "hdkey": "^1.1.1"
   }
 }

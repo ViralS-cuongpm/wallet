@@ -82,20 +82,50 @@ export class WalletBalance1557195002002 implements MigrationInterface {
       `INSERT INTO ${tableName} ` +
         '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
         ' VALUES ' +
-        `('1002', 'btc', 1557636432024, 1557636432024)`
+        `('1001', 'btc', 1557636432024, 1557636432024)`
     );
     await queryRunner.query(
       `INSERT INTO ${tableName} ` +
         '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
         ' VALUES ' +
-        `('1002', 'omni.2', 1557636432024, 1557636432024)`
+        `('1001', 'omni.2', 1557636432024, 1557636432024)`
     );
     await queryRunner.query(
       `INSERT INTO ${tableName} ` +
         '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
         ' VALUES ' +
-        `('1003', 'eos', 1557636432024, 1557636432024)`
+        `('1001', 'bch', 1557636432024, 1557636432024)`
     );    
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
+        ' VALUES ' +
+        `('1002', 'eos', 1557636432024, 1557636432024)`
+    );    
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
+        ' VALUES ' +
+        `('1006', 'eth', 1557636432024, 1557636432024)`
+    );    
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
+        ' VALUES ' +
+        `('1003', 'ada', 1557636432024, 1557636432024)`
+    );    
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
+        ' VALUES ' +
+        `('1004', 'xrp', 1557636432024, 1557636432024)`
+    );    
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
+        ' VALUES ' +
+        `('1005', 'ltc', 1557636432024, 1557636432024)`
+    );
   }
   public async down(queryRunner: QueryRunner): Promise<any> {
     await queryRunner.dropTable(process.env.TYPEORM_PREFIX + 'wallet_balance');
