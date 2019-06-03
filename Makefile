@@ -17,13 +17,13 @@ dep:
 
 deps:
 	make dep t=libs/sota-common
-	make dep t=libs/wallet-core
 	make dep t=libs/sota-btc
 	make dep t=libs/sota-eos
-	make dep t=bin
-	make dep t=bin/typeorm_migration
+	make dep t=libs/wallet-core
 	make dep t=bin/eos
 	make dep t=bin/btc
+	make dep t=bin
+	make dep t=bin/typeorm_migration
 
 ts-dep-reinstall:
 	cd $(t) && rm -rf node_modules package-lock.json && npm i
@@ -34,24 +34,24 @@ ts-dep-install:
 ts-deps:
 	make ts-dep-install t=./
 	make ts-dep-install t=libs/sota-common
-	make ts-dep-install t=libs/wallet-core
 	make ts-dep-install t=libs/sota-btc
 	make ts-dep-install t=libs/sota-eos
+	make ts-dep-install t=libs/wallet-core
+	make ts-dep-install t=bin/btc
+	make ts-dep-install t=bin/eos
 	make ts-dep-install t=bin
 	make ts-dep-install t=bin/typeorm_migration
-	make ts-dep-install t=bin/eos
-	make ts-dep-install t=bin/btc
 
 ts-deps-reinstall:
 	make ts-dep-reinstall t=./
 	make ts-dep-reinstall t=libs/sota-common
-	make ts-dep-reinstall t=libs/wallet-core
 	make ts-dep-reinstall t=libs/sota-btc
 	make ts-dep-reinstall t=libs/sota-eos
 	make ts-dep-reinstall t=bin
 	make ts-dep-reinstall t=bin/typeorm_migration
 	make ts-dep-reinstall t=bin/eos
 	make ts-dep-reinstall t=bin/btc
+	make ts-dep-reinstall t=libs/wallet-core
 
 install:
 	make ts-deps
