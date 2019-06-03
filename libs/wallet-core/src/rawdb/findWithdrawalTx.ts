@@ -14,7 +14,7 @@ export async function findOneWithdrawalTx(
       currency: Array.isArray(currencies) ? In(currencies) : currencies,
       status: Array.isArray(statuses) ? In(statuses) : statuses,
     },
-  });  
+  });
 }
 
 export async function findOneWithdrawalTxWithId(
@@ -29,7 +29,7 @@ export async function findOneWithdrawalTxWithId(
     where: {
       currency: Array.isArray(currencies) ? In(currencies) : currencies,
       status: Array.isArray(statuses) ? In(statuses) : statuses,
-      id: withdrawalId
+      id: withdrawalId,
     },
   });
 }

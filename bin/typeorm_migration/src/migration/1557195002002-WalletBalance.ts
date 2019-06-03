@@ -95,31 +95,31 @@ export class WalletBalance1557195002002 implements MigrationInterface {
         '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
         ' VALUES ' +
         `('1001', 'bch', 1557636432024, 1557636432024)`
-    );    
+    );
     await queryRunner.query(
       `INSERT INTO ${tableName} ` +
         '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
         ' VALUES ' +
         `('1002', 'eos', 1557636432024, 1557636432024)`
-    );    
+    );
     await queryRunner.query(
       `INSERT INTO ${tableName} ` +
         '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
         ' VALUES ' +
         `('1006', 'eth', 1557636432024, 1557636432024)`
-    );    
+    );
     await queryRunner.query(
       `INSERT INTO ${tableName} ` +
         '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
         ' VALUES ' +
         `('1003', 'ada', 1557636432024, 1557636432024)`
-    );    
+    );
     await queryRunner.query(
       `INSERT INTO ${tableName} ` +
         '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +
         ' VALUES ' +
         `('1004', 'xrp', 1557636432024, 1557636432024)`
-    );    
+    );
     await queryRunner.query(
       `INSERT INTO ${tableName} ` +
         '(`wallet_id`, `currency`, `created_at`, `updated_at`)' +

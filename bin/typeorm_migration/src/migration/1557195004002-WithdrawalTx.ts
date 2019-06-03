@@ -13,7 +13,7 @@ export class WithdrawalTx1557195004002 implements MigrationInterface {
             isGenerated: true,
             generationStrategy: 'increment',
             isPrimary: true,
-          },    
+          },
           {
             name: 'hot_wallet_address',
             type: 'varchar',
@@ -24,7 +24,7 @@ export class WithdrawalTx1557195004002 implements MigrationInterface {
             type: 'varchar',
             length: '100',
             isUnique: true,
-            isNullable: true
+            isNullable: true,
           },
           {
             name: 'currency',

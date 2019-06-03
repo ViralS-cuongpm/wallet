@@ -66,7 +66,7 @@ export class HotWallet {
         }
       }
     } catch (e) {
-      // If raw private key is not stored in JSON format, we'll just leave as it is      
+      // If raw private key is not stored in JSON format, we'll just leave as it is
     }
 
     return rawPrivateKey;

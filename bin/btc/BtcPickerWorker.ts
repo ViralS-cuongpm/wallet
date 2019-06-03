@@ -1,8 +1,7 @@
 import 'sota-btc';
 import { ICrawlerOptions } from 'sota-common';
 import { prepareEnvironment, callbacks } from 'wallet-core';
-import { BaseCurrencyWorker, ICurrency,   IOmniAsset, ICurrencyWorkerOptions,
-  CurrencyRegistry, } from 'sota-common';
+import { BaseCurrencyWorker, ICurrency, IOmniAsset, ICurrencyWorkerOptions, CurrencyRegistry } from 'sota-common';
 prepareEnvironment()
   .then(start)
   .catch(err => {
@@ -11,9 +10,9 @@ prepareEnvironment()
   });
 
 function start(): void {
-  const { doNothing } = callbacks;  
+  const { doNothing } = callbacks;
   const crawlerOpts: ICurrencyWorkerOptions = {
-    prepare: doNothing, 
+    prepare: doNothing,
     doProcess: callbacks.pickerDoProcess,
   };
   const crawler = new BaseCurrencyWorker(CurrencyRegistry.Bitcoin, crawlerOpts);

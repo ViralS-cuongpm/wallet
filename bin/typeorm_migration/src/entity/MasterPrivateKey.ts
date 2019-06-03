@@ -1,5 +1,5 @@
-import {Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate} from "typeorm";
-import { Utils } from "../../../../libs/sota-common";
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BeforeUpdate } from 'typeorm';
+import { Utils } from '../../../../libs/sota-common';
 
 @Entity('master_private_key')
 export class MasterPrivateKey {
@@ -22,7 +22,7 @@ export class MasterPrivateKey {
   public createdAt: number;
 
   @Column({ name: 'updated_at' })
-  updatedAt: number;  
+  public updatedAt: number;
 
   @BeforeInsert()
   public updateCreateDates() {
@@ -33,5 +33,5 @@ export class MasterPrivateKey {
   @BeforeUpdate()
   public updateUpdateDates() {
     this.updatedAt = Utils.nowInMillis();
-  }  
+  }
 }

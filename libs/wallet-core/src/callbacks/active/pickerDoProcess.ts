@@ -72,7 +72,7 @@ async function _pickerDoProcess(manager: EntityManager, picker: BaseCurrencyWork
 
   // Find an available internal hot wallet
   const hotWallet = await rawdb.findSufficientHotWallet(manager, walletId, currency, amount);
- 
+
   if (!hotWallet) {
     failedCounter += 1;
     if (failedCounter % 50 === 0) {

@@ -59,7 +59,7 @@ export async function findFreeHotWallets(
 
   // Firstly find all hot wallet with given conditions
   const hotWallets = await manager.find(HotWallet, { walletId, currency, isExternal });
-  
+
   if (!hotWallets.length) {
     return [];
   }

@@ -49,6 +49,7 @@ export async function createAndSaveAddresses(
 ): Promise<string[]> {
   const newIndex = calIndex(index);
   if (network.toLocaleLowerCase() === 'mainnet') {
+    console.error(`Utils::createAndSaveAddresses TODO: implement me...`);
   }
   const seed = await bip39.mnemonicToSeed(seeder); // creates seed buffer
   const root = hdkey.fromMasterSeed(seed);
@@ -76,6 +77,7 @@ export async function createHotWallet(
   path: string
 ) {
   if (network.toLocaleLowerCase() === 'mainnet') {
+    console.error(`Utils::createHotWallet TODO: implement me...`);
   }
   const seed = await bip39.mnemonicToSeed(seeder); // creates seed buffer
   const root = hdkey.fromMasterSeed(seed);

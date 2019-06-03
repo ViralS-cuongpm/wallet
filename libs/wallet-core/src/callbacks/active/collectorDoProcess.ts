@@ -86,7 +86,7 @@ async function _constructUtxoBasedCollectTx(deposits: Deposit[], toAddress: stri
           weirdVouts.push(vout);
           return;
         }
-        
+
         const utxo = allAddressUtxos.find(u => {
           return u.txid === txid && u.address === depositAddress && u.vout === vout.n;
         });

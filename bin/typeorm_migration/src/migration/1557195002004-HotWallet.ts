@@ -1,5 +1,5 @@
 import { MigrationInterface, QueryRunner, Table, TableIndex } from 'typeorm';
-import * as encrypt from '../service/encypt'
+import * as encrypt from '../service/encypt';
 const passwordHash = require('password-hash');
 
 export class HotWallet1557195002004 implements MigrationInterface {
@@ -93,13 +93,13 @@ export class HotWallet1557195002004 implements MigrationInterface {
         '(`user_id`, `wallet_id`, `address`, `currency`, `secret`, `type`, `created_at`, `updated_at`)' +
         ' VALUES ' +
         `('1', '1002', 'testamanpuri', 'eos', '${eosEncrypted}', 'normal', 1557636432024, 1557636432024)`
-    );    
+    );
     await queryRunner.query(
       `INSERT INTO ${tableName} ` +
         '(`user_id`, `wallet_id`, `address`, `currency`, `secret`, `type`, `created_at`, `updated_at`)' +
         ' VALUES ' +
         `('1', '1004', 'r91YMzJfKd3QKJXsU99RkeY9hte63RcLXc', 'xrp', '${xrpEncrypted}', 'normal', 1557636432024, 1557636432024)`
-    );       
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {

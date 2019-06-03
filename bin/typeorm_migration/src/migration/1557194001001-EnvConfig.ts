@@ -33,7 +33,7 @@ export class EnvConfig1557194001001 implements MigrationInterface {
         '(`key`, `value`, `created_at`, `updated_at`)' +
         ' VALUES ' +
         `('network', 'testnet', 1557636432024, 1557636432024)`
-    ); 
+    );
     await queryRunner.createIndex(
       process.env.TYPEORM_PREFIX + 'env_config',
       new TableIndex({
