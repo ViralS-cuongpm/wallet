@@ -49,7 +49,7 @@ async function _signerDoProcess(manager: EntityManager, signer: BasePlatformWork
   }
 
   // const rawPrivateKey = await hotWallet.extractRawPrivateKey();
-  const rawPrivateKey = await Util.calPrivateKeyHotWallet(hotWallet.address, currency.platform, manager)
+  const rawPrivateKey = await Util.calPrivateKeyHotWallet(hotWallet.address, currency.platform, manager);
   const signedTx = await gateway.signRawTransaction(withdrawalTx.unsignedRaw, rawPrivateKey);
   const status = WithdrawalStatus.SIGNED;
   const txid = signedTx.txid;
