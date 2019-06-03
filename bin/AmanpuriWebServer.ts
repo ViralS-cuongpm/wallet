@@ -72,12 +72,22 @@ export class AmanpuriWebServer extends BtcWebServer {
 
     try {
       await getConnection().transaction(async manager => {
-        const addresses = await hd.createAddresses(currency, coin, amount, manager); 
-        if (!addresses.length) {
-          res.status(400).json({ error: "Dont have hd-wallet"});
-          return;
+        switch (currency) {
+          case 'ada': {
+            throw new Error('TODO');
+          }
+          case 'eos':  case 'xrp': {
+            throw new Error('Cannot create new address ' + currency);
+          }
+          default: {
+            const addresses = await hd.createAddresses(currency, coin, amount, manager); 
+            if (!addresses.length) {
+              res.status(400).json({ error: "Dont have hd-wallet"});
+              return;
+            }
+            res.json(addresses);
+          }
         }
-        res.json(addresses);
       });
       //find currency wallet, if it don't exist, create new currency wallet
     }  catch (e) {
@@ -193,12 +203,15 @@ export class AmanpuriWebServer extends BtcWebServer {
 
   //get plaform
   getCurrency(coin:string) {
-    if (coin === 'usdt' || coin === 'bch' || coin === 'btc') {
+    if (coin === 'usdt' || coin === 'btc') {
       return 'btc';
     }
     if (coin === 'eos') {
       return 'eos';
     }
+    if (coin === 'bch') {
+      return 'bch';
+    }    
     if (coin === 'ltc') {
       return 'ltc';
     }

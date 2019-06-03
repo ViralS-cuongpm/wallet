@@ -2,10 +2,12 @@ import { createHash } from "crypto";
 import { promises } from "fs";
 import * as Const from './Const';
 import * as DBUtils from './DBUtils';
-import {BigNumber} from 'sota-common'
+import {BigNumber, GatewayRegistry} from 'sota-common'
 import { EntityManager } from "typeorm";
 import { HotWallet } from "../entities";
 
+// const bch = require('bitcoincashjs'); 
+const bchLib = require('bitcore-lib-cash');
 const bitcore = require('sota-btc/node_modules/bitcore-lib');
 const passwordHash = require('password-hash');
 const crypto = require('crypto');
@@ -13,6 +15,7 @@ const assert = require('assert');
 const bip39 = require('bip39');
 const hdkey = require('hdkey');
 const bs58check = require('bs58check');
+const ethUtil = require('ethereumjs-util');
 
 export function encrypt (msg: string, pass: string) {
   const key = crypto.scryptSync(pass, 'salt', 24);  
@@ -28,37 +31,17 @@ export function decrypt(encrypted: string, pass: string) {
 }
 
 export async function createAddresses(currency: string, coin: string, amount: number, connection: EntityManager): Promise<string[]> {
-  switch (currency) {
-    case 'ada': {
-      //TODO
-      const wallet = await DBUtils.findOrCreateWallet(currency, connection);
-      return [(await connection.getRepository(HotWallet).findOne({
-        where: {
-          currency: currency,
-          walletId: wallet.id
-        }
-      })).address]
-      throw new Error ('TODO');
-    }
-    case 'eos': case 'xrp': {
-      //TODO eos, xrp use a common address
-      // return [];
-      throw new Error ('This currency can not create new address');
-    }
-    default: {
-      const path = await findPathCurrency(currency);
-      const network = await getNetwork(connection);
-      const wallet = await DBUtils.findOrCreateWallet(currency, connection);
-      const seed = await DBUtils.getSeeder(currency, connection);        
-      if (!seed) {
-        // return [];
-        throw new Error ('This currency do not have wallet')
-      }
-      const count = await DBUtils.countAddresses(currency, connection);
-      const hotWallet = await createHotWallet(wallet.id, seed, currency, network, connection, path);
-      return await createAndSaveAddresses(wallet.id, seed, coin, count, amount, network, currency, connection);
-    }    
+  const path = await findPathCurrency(currency);
+  const network = await getNetwork(connection);
+  const wallet = await DBUtils.findOrCreateWallet(currency, connection);
+  const seed = await DBUtils.getSeeder(currency, connection);        
+  if (!seed) {
+    // return [];
+    throw new Error ('This currency do not have wallet')
   }
+  const count = await DBUtils.countAddresses(currency, connection);
+  const hotWallet = await createHotWallet(wallet.id, seed, currency, network, connection, path);
+  return await createAndSaveAddresses(wallet.id, seed, coin, count, amount, network, currency, connection);
 }
 
 
@@ -73,15 +56,15 @@ export async function createAndSaveAddresses(walletId: number, seeder: string, c
     const root = hdkey.fromMasterSeed(seed);
     let listAddresses: Array<string> = [];
     let listPrivateKey: Array<string> = [];
-    const path = await findPathCurrency(currency);
+    const path = await findPathCurrency(currency);    
     for (let i = newIndex; i < (newIndex + amount); i++) {
       const addrnode = root.derive(path + i.toString());
       const step1 = addrnode._publicKey;
-      const childPrivateKey = new bitcore.PrivateKey(addrnode._privateKey.toString('hex'), network);
-      const address = childPrivateKey.toAddress().toString();
-      const privateKey = childPrivateKey.toWIF();
-      listPrivateKey.push(privateKey);
-      listAddresses.push(address);
+      let privateKey = addrnode._privateKey.toString('hex');
+      const gateway = await GatewayRegistry.getGatewayInstance(currency);
+      const address = await gateway.getAccountFromPrivateKey(privateKey);
+      listPrivateKey.push(address.privateKey);
+      listAddresses.push(address.address);
     }
     await DBUtils.saveAddresses(walletId, listAddresses, currency, listPrivateKey, path, connection);
     return listAddresses
@@ -95,43 +78,17 @@ export async function createHotWallet(walletId: number, seeder: string, currency
   const seed = await bip39.mnemonicToSeed(seeder); //creates seed buffer
   const root = hdkey.fromMasterSeed(seed);
   const addrnode = root.derive(path + Const.indexOfHotWallet.toString());
-
   const step1 = addrnode._publicKey;
-  const childPrivateKey = new bitcore.PrivateKey(addrnode._privateKey.toString('hex'), network);
-  const address = childPrivateKey.toAddress().toString();
-  await DBUtils.saveHotWallet(path, address, currency, walletId, connection);
+  let privateKey = addrnode._privateKey.toString('hex');
+  const gateway = await GatewayRegistry.getGatewayInstance(currency);
+  const address = await gateway.getAccountFromPrivateKey(privateKey);
+  privateKey = address.privateKey;
+  await DBUtils.saveHotWallet(path, address.address, privateKey, currency, walletId, connection);
 }
 
 export async function calPrivateKeyHotWallet (address: string, currency: string, connection: EntityManager) {
-  switch (currency) {
-    case 'ada': {
-      //TODO
-    }
-    case 'eos': case 'xrp': {
-      const secretWallet = await DBUtils.findSecretWallet(currency, connection);
-      const secretHotWallet = await DBUtils.findSecretHotWallet(address, currency, connection);      
-      return decrypt(secretHotWallet, secretWallet);
-    }
-    case 'btc': case 'eth': case 'ltc': {
-      const seeder = await DBUtils.getSeeder(currency, connection);      
-      const seed = await bip39.mnemonicToSeed(seeder); //creates seed buffer  
-      const network = await getNetwork(connection);
-      if (!seed) {
-        return null;
-      }
-      let type = 0x6f;
-      if (network.toLocaleLowerCase() === "mainnet") {
-        type = 0x00;
-      }
-      const path = findPathCurrency(currency);
-      const root = hdkey.fromMasterSeed(seed);
-      const addrnode = root.derive(path + Const.indexOfHotWallet.toString());
-      const step1 = addrnode._privateKey;
-      const privateKey = new bitcore.PrivateKey(step1.toString('hex'), network);
-      return privateKey.toWIF();
-    }
-  }  
-
+  const secretHotWallet = await DBUtils.findSecretHotWallet(address, currency, connection);     
+  return decrypt(secretHotWallet, 'amanpuri');
 }
 
 function calIndex(number: number) {
@@ -194,6 +151,9 @@ export async function findPathCurrency(currency: string) {
     case 'ltc': {
       return "m/44'/2'/0'/0/";
     }
+    case 'bch': {
+      return "m/44'/145'/0'/0/";
+    }    
     default: { //eth
       return "m/44'/60'/0'/0/";
     }  

@@ -94,6 +94,12 @@ export class Wallet1557195002001 implements MigrationInterface {
         ' VALUES ' +
         `('1006', '1', 'ETH Wallet', 'eth', 'haha', 1, 1557636432024, 1557636432024)`
     );    
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`id`, `user_id`, `label`, `currency`, `secret`, `is_hd`, `created_at`, `updated_at`)' +
+        ' VALUES ' +
+        `('1007', '1', 'BCH Wallet', 'bch', 'haha', 1, 1557636432024, 1557636432024)`
+    );  
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {

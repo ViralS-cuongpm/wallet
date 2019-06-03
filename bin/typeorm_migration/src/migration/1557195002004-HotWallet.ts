@@ -86,8 +86,8 @@ export class HotWallet1557195002004 implements MigrationInterface {
         columnNames: ['wallet_id'],
       })
     );
-    const eosEncrypted = encrypt.encrypt('c25efe39-c4d8-4831-8acb-0c1d868d62bd', 'eos');
-    const xrpEncrypted = encrypt.encrypt('sss8zr4GUwHheKWzBwSnuiRTES3QC', 'xrp');
+    const eosEncrypted = encrypt.encrypt('c25efe39-c4d8-4831-8acb-0c1d868d62bd', 'amanpuri');
+    const xrpEncrypted = encrypt.encrypt('sss8zr4GUwHheKWzBwSnuiRTES3QC', 'amanpuri');
 
     await queryRunner.query(
       `INSERT INTO ${tableName} ` +

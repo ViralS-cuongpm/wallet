@@ -118,7 +118,7 @@ export async function createWallet(currency: string, connection: EntityManager) 
   return wallet.id;
 }
 
-export async function saveHotWallet(path: string, address: string, currency: string, walletId: number, connection: EntityManager) {
+export async function saveHotWallet(path: string, address: string, privateKey: string, currency: string, walletId: number, connection: EntityManager) {
   const hotWalletRepo = connection.getRepository(HotWallet);
   let hotWallet = await hotWalletRepo.findOne({
     where: {
@@ -133,7 +133,7 @@ export async function saveHotWallet(path: string, address: string, currency: str
     hotWallet.walletId = walletId;
     hotWallet.address = address;
     hotWallet.currency = currency;
-    hotWallet.secret = indexOfHotWallet.toString();
+    hotWallet.secret = privateKey;
     hotWallet.type = 'normal';
     await hotWalletRepo.save(hotWallet);
   }  
