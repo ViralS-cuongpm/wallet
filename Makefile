@@ -19,6 +19,7 @@ deps:
 	make dep t=libs/sota-common
 	make dep t=libs/wallet-core
 	make dep t=libs/sota-btc
+	make dep t=libs/sota-eos
 	make dep t=bin
 	make dep t=bin/typeorm_migration
 	make dep t=bin/eos
@@ -34,6 +35,7 @@ ts-deps:
 	make ts-dep-install t=libs/sota-common
 	make ts-dep-install t=libs/wallet-core
 	make ts-dep-install t=libs/sota-btc
+	make ts-dep-install t=libs/sota-eos
 	make ts-dep-install t=bin
 	make ts-dep-install t=bin/typeorm_migration
 	make ts-dep-install t=bin/eos
@@ -43,6 +45,7 @@ ts-deps-reinstall:
 	make ts-dep-reinstall t=libs/sota-common
 	make ts-dep-reinstall t=libs/wallet-core
 	make ts-dep-reinstall t=libs/sota-btc
+	make ts-dep-reinstall t=libs/sota-eos
 	make ts-dep-reinstall t=bin
 	make ts-dep-reinstall t=bin/typeorm_migration
 	make ts-dep-reinstall t=bin/eos
