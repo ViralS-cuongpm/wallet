@@ -1,0 +1,28 @@
+{
+  "apps": [
+    {
+      "name": "hot-wallet-Ltc-crawler",
+      "script": "bin/ltc/LtcDepositWorker.ts"
+    },
+    {
+      "name": "hot-wallet-Ltc-picker",
+      "script": "bin/ltc/LtcPickerWorker.ts"
+    },
+    {
+      "name": "hot-wallet-Ltc-sender",
+      "script": "bin/ltc/LtcSenderWorker.ts"
+    },
+    {
+      "name": "hot-wallet-Ltc-verifier",
+      "script": "bin/ltc/LtcVerifierWorker.ts"
+    },
+    {
+      "name": "hot-wallet-Ltc-collector",
+      "script": "bin/ltc/LtcCollectorWorker.ts"
+    },
+    {
+      "name": "hot-wallet-Ltc-collector",
+      "script": "bin/ltc/LtcWebService.ts"
+    }    
+  ]
+}
