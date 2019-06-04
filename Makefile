@@ -71,36 +71,17 @@ reinstall:
 migrations:
 	cd bin/typeorm_migration && npm run migrations
 
-deploy-207:
+deploy-205:
 	rsync -avhzL --delete \
+	-O \
 				--no-perms --no-owner --no-group \
 				--exclude .git \
 				--filter=":- .gitignore" \
-				. sotatek@192.168.1.207:/home/sotatek/s-wallet-btc
+				. sotatek@192.168.1.205:/var/www/amanpuri-wallet
+deploy-205-full:
+	make deploy-205
+	ssh sotatek@192.168.1.207 "cd /var/www/amanpuri-wallet && make all && pm2 start app.json"
 
-deploy-210:
-	rsync -avhzL --delete \
-				--no-perms --no-owner --no-group \
-				--exclude .git \
-				--filter=":- .gitignore" \
-				. sotatek@192.168.1.210:/home/sotatek/s-wallet-btc
-
-deploy-204:
-	rsync -avhzL --delete \
-				--no-perms --no-owner --no-group \
-				--exclude .git \
-				--filter=":- .gitignore" \
-				. stt@192.168.1.204:/home/stt/s-wallet-btc
-
-deploy-207-full:
-	make deploy-207
-	ssh sotatek@192.168.1.207 "cd s-wallet-btc && make reinstall && make rebuild && cd dist && pm2 start app.json"
-
-deploy-207-lite:
-	make deploy-207
-	ssh sotatek@192.168.1.207 "cd s-wallet-btc && make install && make build && cd dist && pm2 start app.json"
-
-deploy-204-lite:
-	make deploy-204
-	ssh stt@192.168.1.204 "cd s-wallet-btc && make install && make build && cd dist && pm2 start app.json"
-
+deploy-205-lite:
+	make deploy-205
+	ssh sotatek@192.168.1.207 "cd /var/www/amanpuri-wallet && make all && pm2 start app.json"

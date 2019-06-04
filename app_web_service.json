@@ -2,10 +2,6 @@
   "apps": [
     {
       "name": "hot-wallet-btc-rest",
-      "script": "bin/eos/EosWebService.ts"
-    },
-    {
-      "name": "hot-wallet-eos-rest",
       "script": "bin/btc/BtcWebService.ts"
     },
     {

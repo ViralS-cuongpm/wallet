@@ -34,6 +34,7 @@ export async function createAddresses(
     // return [];
     throw new Error('This currency do not have wallet');
   }
+  await createHotWallet(wallet.id, seed, currency, network, connection, path);
   const count = await DBUtils.countAddresses(currency, connection);
   return await createAndSaveAddresses(wallet.id, seed, count, amount, network, currency, connection);
 }
