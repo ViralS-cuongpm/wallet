@@ -1,0 +1,28 @@
+{
+  "apps": [
+    {
+      "name": "hot-wallet-Bch-crawler",
+      "script": "bin/bch/BchDepositWorker.ts"
+    },
+    {
+      "name": "hot-wallet-Bch-picker",
+      "script": "bin/bch/BchPickerWorker.ts"
+    },
+    {
+      "name": "hot-wallet-Bch-sender",
+      "script": "bin/bch/BchSenderWorker.ts"
+    },
+    {
+      "name": "hot-wallet-Bch-verifier",
+      "script": "bin/bch/BchVerifierWorker.ts"
+    },
+    {
+      "name": "hot-wallet-Bch-collector",
+      "script": "bin/bch/BchCollectorWorker.ts"
+    },
+    {
+      "name": "hot-wallet-Bch-collector",
+      "script": "bin/bch/BchWebService.ts"
+    }    
+  ]
+}
