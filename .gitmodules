@@ -16,3 +16,9 @@
 [submodule "libs/sota-eth"]
 	path = libs/sota-eth
 	url = git@github.com:sotatek-dev/s-wallet-eth-base.git
+[submodule "libs/sota-xrp"]
+	path = libs/sota-xrp
+	url = git@github.com:sotatek-dev/s-wallet-xrp-base.git
+[submodule "libs/sota-ada"]
+	path = libs/sota-ada
+	url = git@github.com:sotatek-dev/s-wallet-ada-base.git
