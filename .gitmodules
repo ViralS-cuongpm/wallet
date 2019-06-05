@@ -13,3 +13,6 @@
 [submodule "libs/sota-bch"]
 	path = libs/sota-bch
 	url = git@github.com:sotatek-dev/s-wallet-bch-base.git
+[submodule "libs/sota-eth"]
+	path = libs/sota-eth
+	url = git@github.com:sotatek-dev/s-wallet-eth-base.git
