@@ -21,11 +21,13 @@ deps:
 	make dep t=libs/sota-eos
 	make dep t=libs/sota-bch
 	make dep t=libs/sota-ltc
+	make dep t=libs/sota-eth
 	make dep t=libs/wallet-core
 	make dep t=bin/eos
 	make dep t=bin/btc
 	make dep t=bin/bch
 	make dep t=bin/ltc
+	make dep t=bin/eth
 	make dep t=bin/typeorm_migration
 
 ts-dep-reinstall:
@@ -41,11 +43,13 @@ ts-deps:
 	make ts-dep-install t=libs/sota-eos
 	make ts-dep-install t=libs/sota-bch
 	make ts-dep-install t=libs/sota-ltc
+	make ts-dep-install t=libs/sota-eth	
 	make ts-dep-install t=libs/wallet-core
 	make ts-dep-install t=bin/btc
 	make ts-dep-install t=bin/bch
 	make ts-dep-install t=bin/ltc
 	make ts-dep-install t=bin/eos
+	make ts-dep-install t=bin/eth
 	make ts-dep-install t=bin/typeorm_migration
 
 ts-deps-reinstall:
@@ -55,12 +59,14 @@ ts-deps-reinstall:
 	make ts-dep-reinstall t=libs/sota-eos
 	make ts-dep-reinstall t=libs/sota-bch
 	make ts-dep-reinstall t=libs/sota-ltc
+	make ts-dep-reinstall t=libs/sota-eth
 	make ts-dep-reinstall t=libs/wallet-core
 	make ts-dep-reinstall t=bin/typeorm_migration
 	make ts-dep-reinstall t=bin/eos
 	make ts-dep-reinstall t=bin/btc
 	make ts-dep-reinstall t=bin/bch
 	make ts-dep-reinstall t=bin/ltc
+	make ts-dep-reinstall t=bin/eth
 
 install:
 	make ts-deps

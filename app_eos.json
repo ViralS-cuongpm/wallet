@@ -17,28 +17,8 @@
       "script": "bin/eos/EosVerifierWorker.ts"
     },
     {
-      "name": "hot-wallet-rest",
-      "script": "bin/WebService.ts"
-    },
-    {
-      "name": "hot-wallet-Btc-crawler",
-      "script": "bin/btc/BtcDepositWorker.ts"
-    },
-    {
-      "name": "hot-wallet-Btc-picker",
-      "script": "bin/btc/BtcPickerWorker.ts"
-    },
-    {
-      "name": "hot-wallet-Btc-sender",
-      "script": "bin/btc/BtcSenderWorker.ts"
-    },
-    {
-      "name": "hot-wallet-Btc-verifier",
-      "script": "bin/btc/BtcVerifierWorker.ts"
-    },
-    {
-      "name": "hot-wallet-Btc-collector",
-      "script": "bin/btc/BtcCollectorWorker.ts"
+      "name": "hot-wallet-eos-sender",
+      "script": "bin/eos/EosSignerWorker.ts"
     }
   ]
 }
