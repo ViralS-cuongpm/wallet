@@ -1,7 +1,7 @@
 import { EntityManager, In, LessThan, Not } from 'typeorm';
 import { Wallet, Address, HotWallet, WalletBalance, WithdrawalTx, EnvConfig, Withdrawal, WalletLog } from '../entities';
 import { userId, UNSIGNED, kmsId, indexOfHotWallet } from './Const';
-import { BigNumber, CurrencyRegistry } from 'sota-common';
+import { BigNumber, CurrencyRegistry, Account } from 'sota-common';
 
 const passwordHash = require('password-hash');
 
@@ -22,90 +22,33 @@ export async function findOrCreateWallet(currency: string, connection: EntityMan
     wallet.userId = userId;
     wallet.label = currency.toUpperCase() + ' wallet';
     wallet.id = await findWalletId(currency);
+    await connection.getRepository(Wallet).save(wallet);
   }
-  await connection.getRepository(Wallet).save(wallet);
   return wallet;
 }
 
-// export async function checkPrivateKeyDB (currency: string, connection: EntityManager) {
-//   let masterPrivateKey = await connection.getRepository(MasterPrivateKey).findOne({
-//     where: {
-//       currency: currency,
-//     }
-//   })
-//   if (!masterPrivateKey) {
-//     return false;
-//   }
-//   return true;
-// }
-
-// export async function checkPasswordDB (currency: string, pass: string, connection: EntityManager) {
-//   let masterPrivateKey = await connection.getRepository(MasterPrivateKey).findOne({
-//     where: {
-//       currency: currency
-//     }
-//   })
-//   if (!passwordHash.verify(pass, masterPrivateKey.passwordHash)) {
-//     return false;
-//   }
-//   return true;
-// }
-
 export async function saveAddresses(
   walletId: number,
-  addresses: string[],
   currency: string,
-  privateKeys: string[],
+  addresses: Account[],
   path: string,
-  connection: EntityManager
+  connection: EntityManager,
 ) {
-  let count = 0;
-  addresses.forEach(async address => {
-    const newAddress = new Address();
-    newAddress.walletId = walletId;
-    newAddress.currency = currency;
-    newAddress.address = address;
-    newAddress.secret = privateKeys[count];
-    newAddress.hdPath = path;
-    newAddress.isExternal = false;
-    newAddress.isHd = true;
-    count++;
-    await connection.getRepository(Address).save(newAddress);
-  });
+  const newAddresses: Address[] = [];
+  await Promise.all(
+    addresses.map(address => {
+      const newAddress = new Address();
+      newAddress.walletId = walletId;
+      newAddress.currency = currency;
+      newAddress.address = address.address;
+      newAddress.secret = address.privateKey;
+      newAddress.hdPath = path;
+      newAddress.isExternal = false;
+      newAddress.isHd = true;
+      return newAddresses.push(newAddress);
+  }))
+  await connection.getRepository(Address).save(newAddresses);
 }
-
-// export async function getPrivateKey(currency: string, connection: EntityManager) {
-//   let masterPrivateKey = await connection.getRepository(MasterPrivateKey).findOne({
-//     where: {
-//       currency: currency,
-//     }
-//   })
-//   if(masterPrivateKey) {
-//     return {
-//       walletId: masterPrivateKey.walletId,
-//       seed: masterPrivateKey.encrypted
-//     }
-//   }
-//   return null;
-// }
-
-// export async function saveMasterPrivateKey(encrypted: string, currency: string, password: string, connection: EntityManager) {
-//   const masterPrivateKeyRepo = connection.getRepository(MasterPrivateKey);
-//   let masterPrivateKey = await masterPrivateKeyRepo.findOne({
-//     where: {
-//       currency: currency,
-//     }
-//   })
-//   if(!masterPrivateKey) {
-//     masterPrivateKey = new MasterPrivateKey();
-//     masterPrivateKey.walletId = usdtWalletId;
-//     masterPrivateKey.encrypted = encrypted;
-//     masterPrivateKey.passwordHash = passwordHash.generate(password);
-//     masterPrivateKey.currency = currency;
-//     await masterPrivateKeyRepo.save(masterPrivateKey);
-//   }
-// }
-
 export async function createWallet(currency: string, connection: EntityManager) {
   const walletRepo = connection.getRepository(Wallet);
   let wallet = await walletRepo.findOne({
@@ -127,8 +70,7 @@ export async function createWallet(currency: string, connection: EntityManager) 
 
 export async function saveHotWallet(
   path: string,
-  address: string,
-  privateKey: string,
+  address: Account,
   currency: string,
   walletId: number,
   connection: EntityManager
@@ -145,9 +87,9 @@ export async function saveHotWallet(
     hotWallet = new HotWallet();
     hotWallet.userId = userId;
     hotWallet.walletId = walletId;
-    hotWallet.address = address;
+    hotWallet.address = address.address;
     hotWallet.currency = currency;
-    hotWallet.secret = privateKey;
+    hotWallet.secret = address.privateKey;
     hotWallet.type = 'normal';
     await hotWalletRepo.save(hotWallet);
   }
@@ -160,7 +102,7 @@ export async function saveHotWallet(
     },
   });
   if (!hotWalletaddress) {
-    saveAddresses(walletId, [hotWallet.address], currency, [indexOfHotWallet.toString()], path, connection);
+    saveAddresses(walletId, currency, [address], path, connection);
   }
 }
 
@@ -188,7 +130,7 @@ export async function insertWithdrawalRecord(
   withdrawal.txid = `TMP_WITHDRAWAL_TX` + toAddress + Date.now().toString();
   (withdrawal.currency = coin),
     // sub_currency: subcoin,
-    (withdrawal.fromAddress = 'TMP_ADDRESS');
+  (withdrawal.fromAddress = 'TMP_ADDRESS');
   withdrawal.toAddress = toAddress;
   withdrawal.amount = amount.toString();
   (withdrawal.status = UNSIGNED), (withdrawal.hashCheck = 'TMP_HASHCHECK');

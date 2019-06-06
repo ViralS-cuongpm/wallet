@@ -1,7 +1,8 @@
 import * as Const from './Const';
 import * as DBUtils from './DBUtils';
-import { BigNumber, GatewayRegistry } from 'sota-common';
+import { BigNumber, GatewayRegistry, Account } from 'sota-common';
 import { EntityManager } from 'typeorm';
+import { indexOfHotWallet } from './Const';
 
 const crypto = require('crypto');
 const bip39 = require('bip39');
@@ -29,9 +30,8 @@ export async function createAddresses(
   const path = await findPathCurrency(currency);
   const network = await getNetwork(connection);
   const wallet = await DBUtils.findOrCreateWallet(currency, connection);
-  const seed = await DBUtils.getSeeder(currency, connection);
+  const seed = wallet.secret;
   if (!seed) {
-    // return [];
     throw new Error('This currency do not have wallet');
   }
   await createHotWallet(wallet.id, seed, currency, network, connection, path);
@@ -53,20 +53,21 @@ export async function createAndSaveAddresses(
     console.error(`Utils::createAndSaveAddresses TODO: implement me...`);
   }
   const seed = await bip39.mnemonicToSeed(seeder); // creates seed buffer
-  const root = hdkey.fromMasterSeed(seed);
-  const listAddresses: string[] = [];
-  const listPrivateKey: string[] = [];
+  const listPairs: Account[] = [];
   const path = await findPathCurrency(currency);
   for (let i = newIndex; i < newIndex + amount; i++) {
-    const addrnode = root.derive(path + i.toString());
-    const privateKey = addrnode._privateKey.toString('hex');
-    const gateway = await GatewayRegistry.getGatewayInstance(currency);
-    const address = await gateway.getAccountFromPrivateKey(privateKey);
-    listPrivateKey.push(address.privateKey);
-    listAddresses.push(address.address);
+    listPairs.push(await createAnAddress(seed, path, i, currency));
   }
-  await DBUtils.saveAddresses(walletId, listAddresses, currency, listPrivateKey, path, connection);
-  return listAddresses;
+  await DBUtils.saveAddresses(walletId, currency, listPairs, path, connection);
+  return listPairs.map(pair => pair.address);
+}
+
+export async function createAnAddress(seed: Buffer, path: string, index: number, currency: string) {
+  const root = hdkey.fromMasterSeed(seed);
+  const addrnode = root.derive(path + index.toString());
+  const privateKey = addrnode._privateKey.toString('hex');
+  const gateway = await GatewayRegistry.getGatewayInstance(currency);
+  return await gateway.getAccountFromPrivateKey(privateKey);
 }
 
 export async function createHotWallet(
@@ -81,13 +82,7 @@ export async function createHotWallet(
     console.error(`Utils::createHotWallet TODO: implement me...`);
   }
   const seed = await bip39.mnemonicToSeed(seeder); // creates seed buffer
-  const root = hdkey.fromMasterSeed(seed);
-  const addrnode = root.derive(path + Const.indexOfHotWallet.toString());
-  let privateKey = addrnode._privateKey.toString('hex');
-  const gateway = await GatewayRegistry.getGatewayInstance(currency);
-  const address = await gateway.getAccountFromPrivateKey(privateKey);
-  privateKey = address.privateKey;
-  await DBUtils.saveHotWallet(path, address.address, privateKey, currency, walletId, connection);
+  await DBUtils.saveHotWallet(path, await createAnAddress(seed, path, indexOfHotWallet, currency), currency, walletId, connection);
 }
 
 export async function calPrivateKeyHotWallet(
@@ -103,29 +98,6 @@ function calIndex(number: number) {
   return number + 100;
 }
 
-// export async function checkPassword(pass: string, currency: string, connection: EntityManager) {
-//   if (await DBUtils.checkPasswordDB(currency, pass, connection)) {
-//     return true;
-//   }
-//   return false;
-// }
-
-// export async function checkPrivateKey(currency: string, connection: EntityManager) {
-//   if (await DBUtils.checkPrivateKeyDB(currency, connection)) {
-//     return true;
-//   }
-//   return false;
-// }
-
-// export async function validatePrivateKey(currency: string, pass: string, masterPrivateKey: string, connection: EntityManager) {
-//   const seed = await DBUtils.getPrivateKey(currency, connection);
-//   const seeder = decrypt(seed.seed, pass);
-//   if (seeder.toString() !== (await bip39.mnemonicToSeed(masterPrivateKey)).toString('hex')) {
-//     return false;
-//   }
-//   return true;
-// }
-
 export async function approveTransaction(
   toAddress: string,
   amount: number,
@@ -138,12 +110,12 @@ export async function approveTransaction(
   if (!balance) {
     return null;
   }
-  if (new BigNumber(balance.balance).isGreaterThanOrEqualTo(amount)) {
-    const withdrawalId = await DBUtils.insertWithdrawalRecord(wallet.id, toAddress, amount, coin, connection);
-    await DBUtils.insertBalance(wallet.id, withdrawalId, coin, amount, connection);
-    return withdrawalId;
+  if (new BigNumber(amount).isGreaterThan(balance.balance)) {
+    return 'amount greater than balance';
   }
-  return 'amount greater than balance';
+  const withdrawalId = await DBUtils.insertWithdrawalRecord(wallet.id, toAddress, amount, coin, connection);
+  await DBUtils.insertBalance(wallet.id, withdrawalId, coin, amount, connection);
+  return withdrawalId;
 }
 export async function findId(id: number, connection: EntityManager) {
   return DBUtils.findIdDB(id, connection);
