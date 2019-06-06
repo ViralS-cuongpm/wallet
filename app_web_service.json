@@ -14,7 +14,7 @@
     },
     {
       "name": "hot-wallet-eth-rest",
-      "script": "bin/bch/EthWebService.ts"
+      "script": "bin/eth/EthWebService.ts"
     }
   ]
 }
