@@ -82,7 +82,13 @@ export async function createHotWallet(
     console.error(`Utils::createHotWallet TODO: implement me...`);
   }
   const seed = await bip39.mnemonicToSeed(seeder); // creates seed buffer
-  await DBUtils.saveHotWallet(path, await createAnAddress(seed, path, indexOfHotWallet, currency), currency, walletId, connection);
+  await DBUtils.saveHotWallet(
+    path,
+    await createAnAddress(seed, path, indexOfHotWallet, currency),
+    currency,
+    walletId,
+    connection
+  );
 }
 
 export async function calPrivateKeyHotWallet(

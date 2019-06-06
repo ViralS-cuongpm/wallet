@@ -32,7 +32,7 @@ export async function saveAddresses(
   currency: string,
   addresses: Account[],
   path: string,
-  connection: EntityManager,
+  connection: EntityManager
 ) {
   const newAddresses: Address[] = [];
   await Promise.all(
@@ -46,7 +46,8 @@ export async function saveAddresses(
       newAddress.isExternal = false;
       newAddress.isHd = true;
       return newAddresses.push(newAddress);
-  }))
+    })
+  );
   await connection.getRepository(Address).save(newAddresses);
 }
 export async function createWallet(currency: string, connection: EntityManager) {
@@ -130,7 +131,7 @@ export async function insertWithdrawalRecord(
   withdrawal.txid = `TMP_WITHDRAWAL_TX` + toAddress + Date.now().toString();
   (withdrawal.currency = coin),
     // sub_currency: subcoin,
-  (withdrawal.fromAddress = 'TMP_ADDRESS');
+    (withdrawal.fromAddress = 'TMP_ADDRESS');
   withdrawal.toAddress = toAddress;
   withdrawal.amount = amount.toString();
   (withdrawal.status = UNSIGNED), (withdrawal.hashCheck = 'TMP_HASHCHECK');
