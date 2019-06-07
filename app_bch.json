@@ -21,7 +21,7 @@
       "script": "bin/bch/BchCollectorWorker.ts"
     },
     {
-      "name": "hot-wallet-Bch-collector",
+      "name": "hot-wallet-Bch-webservice",
       "script": "bin/bch/BchWebService.ts"
     }    
   ]
