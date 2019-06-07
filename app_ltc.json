@@ -21,7 +21,7 @@
       "script": "bin/ltc/LtcCollectorWorker.ts"
     },
     {
-      "name": "hot-wallet-Ltc-collector",
+      "name": "hot-wallet-Ltc-webservice",
       "script": "bin/ltc/LtcWebService.ts"
     }    
   ]

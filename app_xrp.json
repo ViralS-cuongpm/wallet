@@ -1,0 +1,24 @@
+{
+  "apps": [
+    {
+      "name": "hot-wallet-xrp-crawler",
+      "script": "bin/xrp/XrpDepositWorker.ts"
+    },
+    {
+      "name": "hot-wallet-xrp-picker",
+      "script": "bin/xrp/XrpPickerWorker.ts"
+    },
+    {
+      "name": "hot-wallet-xrp-sender",
+      "script": "bin/xrp/XrpSenderWorker.ts"
+    },
+    {
+      "name": "hot-wallet-xrp-verifier",
+      "script": "bin/xrp/XrpVerifierWorker.ts"
+    },
+    {
+      "name": "hot-wallet-xrp-sender",
+      "script": "bin/xrp/XrpSignerWorker.ts"
+    }
+  ]
+}
