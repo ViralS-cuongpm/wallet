@@ -67,6 +67,7 @@ export class InternalTransfer1557195003003 implements MigrationInterface {
             name: 'fee_currency',
             type: 'varchar',
             length: '200',
+            isNullable: true
           },
           {
             name: 'status',

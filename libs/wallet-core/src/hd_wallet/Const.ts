@@ -5,3 +5,4 @@ export const iv = Buffer.alloc(16, 0);
 export const UNSIGNED = 'unsigned';
 export const kmsId = 0;
 export const pass = 'amanpuri';
+export const SEED_REQUESTED = 'seed_requested';

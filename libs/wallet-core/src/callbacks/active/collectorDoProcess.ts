@@ -10,11 +10,13 @@ import {
   BigNumber,
   IBoiledVOut,
   IInsightUtxoInfo,
+  ICurrency,
+  ISignedRawTransaction,
 } from 'sota-common';
 import { EntityManager, getConnection } from 'typeorm';
 import * as rawdb from '../../rawdb';
-import { CollectStatus } from '../../Enums';
-import { Deposit } from '../../entities';
+import { CollectStatus, InternalTransferType, WithdrawalStatus } from '../../Enums';
+import { Deposit, Address, InternalTransfer } from '../../entities';
 
 const logger = getLogger('collectorDoProcess');
 
@@ -43,24 +45,50 @@ async function _collectorDoProcess(manager: EntityManager, collector: BasePlatfo
   const platformCurrencies = CurrencyRegistry.getCurrenciesOfPlatform(platformCurrency.platform);
   const allSymbols = platformCurrencies.map(c => c.symbol);
 
-  const { walletId, currency, records } = await rawdb.findOneGroupOfCollectableDeposits(manager, allSymbols);
+  const { walletId, currency, records, amount } = await rawdb.findOneGroupOfCollectableDeposits(manager, allSymbols);
 
-  if (!walletId || !currency || !records.length) {
+  if (!walletId || !currency || !records.length || amount.isZero()) {
     logger.info(`There're no uncollected deposit right now. Will try to process later...`);
     return;
   }
 
-  const hotWallet = await rawdb.findAnyInternalHotWallet(manager, walletId, currency.symbol);
-  const rawTx: IRawTransaction = currency.isUTXOBased
-    ? await _constructUtxoBasedCollectTx(records, hotWallet.address)
-    : await _constructAccountBasedCollectTx(records, hotWallet.address);
+  const rallyWallet = await rawdb.findAnyInternalHotWallet(manager, walletId, currency.platform);
+  if (!rallyWallet) {
+    throw new Error(`Hot wallet for symbol=${currency.platform} not found`);
+  }
+  let rawTx: IRawTransaction ;
+  try {
+    rawTx = currency.isUTXOBased
+      ? await _constructUtxoBasedCollectTx(records, rallyWallet.address)
+      : await _constructAccountBasedCollectTx(records, rallyWallet.address);
+  } catch (err) {
+    logger.error(`Cannot create raw transaction, may need fee seeder err=${err}`);
+    await rawdb.updateRecordsTimestamp(manager, Deposit, records.map(r => r.id));
+    if (!currency.isNative) {
+      if (records.length > 1) {
+        throw new Error('multiple tx seeding is not supported now');
+      }
+      const record = records[0];
+      record.collectStatus = CollectStatus.SEED_REQUESTED;
+      await manager.save(record);
+    }
+    return;
+  }
+  if (!rawTx) {
+    throw new Error('rawTx is undefined because of unknown problem');
+  }
+
+  const signedTx = await _collectorSignDoProcess(manager, currency, records, rawTx);
+  await _collectorSubmitDoProcess(manager, currency, walletId, signedTx, rallyWallet.address, amount);
 
   const now = Utils.nowInMillis();
   await manager.update(Deposit, records.map(r => r.id), {
     updatedAt: now,
-    collectedTxid: rawTx.txid,
+    collectedTxid: signedTx.txid,
     collectStatus: CollectStatus.COLLECTING,
   });
+
+  logger.info(`Collect tx sent: address=${rallyWallet.address}, txid=${signedTx.txid}`);
 }
 
 async function _constructUtxoBasedCollectTx(deposits: Deposit[], toAddress: string): Promise<IRawTransaction> {
@@ -127,3 +155,66 @@ async function _constructAccountBasedCollectTx(deposits: Deposit[], toAddress: s
 
   return gateway.constructRawTransaction(deposits[0].toAddress, toAddress, amount);
 }
+
+async function _collectorSignDoProcess(
+  manager: EntityManager,
+  currency: ICurrency,
+  deposits: Deposit[],
+  rawTx: IRawTransaction
+): Promise<ISignedRawTransaction> {
+  const gateway = GatewayRegistry.getGatewayInstance(currency);
+  const secrets = await Promise.all(
+    deposits.map(async deposit => {
+      const address = await manager.findOne(Address, {
+        address: deposit.toAddress,
+      });
+      if (!address) {
+        throw new Error(`${deposit.toAddress} is not in database`);
+      }
+      return await address.extractRawPrivateKey();
+    })
+  );
+
+  if (currency.isUTXOBased) {
+    return gateway.signRawTransaction(rawTx.unsignedRaw, secrets);
+  }
+
+  if (secrets.length > 1) {
+    throw new Error('Account-base tx is only use one secret');
+  }
+
+  return gateway.signRawTransaction(rawTx.unsignedRaw, secrets[0]);
+}
+
+async function _collectorSubmitDoProcess(
+  manager: EntityManager,
+  currency: ICurrency,
+  walletId: number,
+  signedTx: ISignedRawTransaction,
+  toAddress: string,
+  amount: BigNumber
+): Promise<void> {
+  const gateway = GatewayRegistry.getGatewayInstance(currency);
+
+  try {
+    await gateway.sendRawTransaction(signedTx.signedRaw);
+  } catch (e) {
+    logger.error(`Can not send transaction txid=${signedTx.txid}`);
+    throw e;
+  }
+
+  const internalTransferRecord = new InternalTransfer();
+  internalTransferRecord.currency = currency.symbol;
+  internalTransferRecord.txid = signedTx.txid;
+  internalTransferRecord.walletId = walletId;
+  internalTransferRecord.type = InternalTransferType.COLLECT;
+  internalTransferRecord.status = WithdrawalStatus.SENT;
+  internalTransferRecord.fromAddress = 'will remove this field';
+  internalTransferRecord.toAddress = toAddress;
+  internalTransferRecord.amount = amount.toString();
+
+  await Utils.PromiseAll([manager.save(internalTransferRecord)]);
+  return;
+}
+
+

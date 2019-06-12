@@ -9,6 +9,10 @@
       "script": "bin/ltc/LtcPickerWorker.ts"
     },
     {
+      "name": "hot-wallet-Ltc-signer",
+      "script": "bin/ltc/LtcSignerWorker.ts"
+    },
+    {
       "name": "hot-wallet-Ltc-sender",
       "script": "bin/ltc/LtcSenderWorker.ts"
     },

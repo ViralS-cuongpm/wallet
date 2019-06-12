@@ -1,4 +1,4 @@
-import 'sota-btc';
+import 'sota-ltc';
 import { BaseCoinCollector, prepareEnvironment, callbacks } from 'wallet-core';
 import { ICurrencyWorkerOptions, BlockchainPlatform } from 'sota-common';
 import { collectorDoProcess } from 'wallet-core/src/callbacks';
@@ -16,6 +16,6 @@ function start(): void {
     doProcess: collectorDoProcess,
   };
 
-  const collector = new BaseCoinCollector(BlockchainPlatform.BitcoinCash, collectorOpts);
-  // collector.start();
+  const collector = new BaseCoinCollector(BlockchainPlatform.Litecoin, collectorOpts);
+  collector.start();
 }

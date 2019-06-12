@@ -3,6 +3,8 @@ export enum DepositEvent {
   CONFIRMED = 'confirmed',
   COLLECTED = 'collected',
   COLLECTED_FAILED = 'collected_failed',
+  SEEDING = 'seeding',
+  SEEDED = 'seeded',
   NOTCOLLECT = 'notcollect',
 }
 
@@ -61,4 +63,5 @@ export enum CollectStatus {
   COLLECTING = 'collecting',
   COLLECTED = 'collected',
   NOTCOLLECT = 'notcollect',
+  SEED_REQUESTED = 'seed_requested',
 }

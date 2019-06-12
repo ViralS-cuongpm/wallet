@@ -9,6 +9,10 @@
       "script": "bin/btc/BtcPickerWorker.ts"
     },
     {
+      "name": "hot-wallet-Btc-signer",
+      "script": "bin/btc/BtcSignerWorker.ts"
+    },
+    {
       "name": "hot-wallet-Btc-sender",
       "script": "bin/btc/BtcSenderWorker.ts"
     },
@@ -21,7 +25,11 @@
       "script": "bin/btc/BtcCollectorWorker.ts"
     },
     {
-      "name": "hot-wallet-Btc-collector",
+      "name": "hot-wallet-Btc-fee-seeder",
+      "script": "bin/btc/BtcFeeSeederWorker.ts"
+    },
+    {
+      "name": "hot-wallet-Btc-webservice",
       "script": "bin/btc/BtcWebService.ts"
     }    
   ]

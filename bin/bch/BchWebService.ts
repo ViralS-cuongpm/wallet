@@ -1,6 +1,6 @@
 import { BchWebServer } from 'sota-bch';
 import util from 'util';
-import { getLogger } from 'sota-common';
+import { getLogger, Utils } from 'sota-common';
 import * as bodyParser from 'body-parser';
 import { prepareEnvironment, hd } from 'wallet-core';
 import { getConnection } from 'wallet-core/node_modules/typeorm';
@@ -27,37 +27,23 @@ class AmanpuriBchWebServer extends BchWebServer {
   public async createNewAddress(req: any, res: any) {
     const amount = req.body.amount || 1;
     const coin: string = req.params.currency.toString();
-    if (!coin) {
-      res.status(400).json({ error: 'Lack currency' });
-      return;
-    }
-    const currency: string = this.getCurrency(coin);
-    if (!currency) {
-      res.status(400).json({ error: 'Incorrect currency' });
-      return;
-    }
-    if (!coin) {
-      res.status(400).json({ error: 'Incorrect coin' });
-      return;
+    if (coin !== 'bch') {
+      return res.status(400).json({ error: 'Incorrect currency!' });      
     }
     if (!amount || amount <= 0) {
-      res.status(400).json({ error: 'Lack amount' });
-      return;
+      return res.status(400).json({ error: 'Incorrect amount!' });
     }
-
+    const currency = coin;
     try {
       await getConnection().transaction(async manager => {
         const addresses = await hd.createAddresses(currency, coin, amount, manager);
         if (!addresses.length) {
-          res.status(400).json({ error: 'Dont have hd-wallet' });
-          return;
+          return res.status(400).json({ error: 'Do not have HD wallet for this currency' });
         }
         res.json(addresses);
       });
-      // find currency wallet, if it don't exist, create new currency wallet
     } catch (e) {
-      res.status(500).json({ error: e.toString() });
-      return;
+      return res.status(500).json({ error: e.toString() });
     }
   }
 
@@ -65,68 +51,27 @@ class AmanpuriBchWebServer extends BchWebServer {
     const toAddress: string = req.body.toAddress;
     const amount: number = req.body.amount;
     const coin: string = req.params.currency.toString();
-    if (!coin) {
-      res.status(400).json({ error: 'Lack currency' });
-      return;
-    }
-    const currency: string = this.getCurrency(coin);
-    if (!toAddress) {
-      res.status(400).json({ error: 'Lack toAddress' });
-      return;
+    if (coin !== 'bch') {
+      return res.status(400).json({ error: 'Incorrect currency!' });
     }
     if (!amount) {
-      res.status(400).json({ error: 'Lack amount' });
-      return;
+      return res.status(400).json({ error: 'Incorrect amount!' });
     }
-    if (!currency) {
-      res.status(400).json({ error: 'Incorrect currency' });
-      return;
-    }
-    if (!coin) {
-      res.status(400).json({ error: 'Incorrect currency' });
-      return;
-    }
-    if (!(await this.validateToAddress(toAddress))) {
-      res.status(400).json({ error: 'Invalid address' });
-      return;
+    const currency = coin;
+    if (!(await hd.validateAddress(currency, toAddress))) {
+      return res.status(400).json({ error: 'Invalid address!' });
     }
     try {
       await getConnection().transaction(async manager => {
         const response = await hd.approveTransaction(toAddress, amount, coin, currency, manager);
-        if (response) {
-          return res.json({ id: response });
+        if (!response) {
+          res.status(500).json({ error: 'Fail!' });
         }
-        res.json('dont have wallet');
+        return res.json({ id: response });
       });
     } catch (e) {
       res.status(400).json({ error: e.toString() });
     }
-  }
-
-  // get plaform
-  public getCurrency(coin: string) {
-    if (coin === 'usdt' || coin === 'btc') {
-      return 'btc';
-    }
-    if (coin === 'eos') {
-      return 'eos';
-    }
-    if (coin === 'bch') {
-      return 'bch';
-    }
-    if (coin === 'ltc') {
-      return 'ltc';
-    }
-    if (coin === 'ada') {
-      return 'ada';
-    }
-    if (coin === 'eth') {
-      return 'eth';
-    }
-    if (coin === 'xrp') {
-      return 'xrp';
-    }
-    return null;
   }
 
   protected setup() {
@@ -151,12 +96,4 @@ class AmanpuriBchWebServer extends BchWebServer {
       }
     });
   }
-
-  protected async validateToAddress(address: string) {
-    if (await this.getGateway(this._currency.symbol).isValidAddressAsync(address)) {
-      return true;
-    }
-    return false;
-  }
-  // get name of usdt in blockchain network
 }

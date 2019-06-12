@@ -33,6 +33,9 @@ export class InternalTransfer {
   @Column('varchar', { length: 20, name: 'status', nullable: false })
   public status: string;
 
+  @Column('varchar', { length: 200, name: 'fee_currency', nullable: true })
+  public feeCurrency: string;
+
   @Column({ name: 'created_at', type: 'bigint' })
   public createdAt: number;
 

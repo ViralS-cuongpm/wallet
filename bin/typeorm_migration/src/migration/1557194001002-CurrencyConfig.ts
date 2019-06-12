@@ -54,6 +54,43 @@ export class CurrencyConfig1557194001002 implements MigrationInterface {
             isNullable: true,
           },
           {
+            name: 'upper_threshold',
+            type: 'decimal',
+            unsigned: true,
+            precision: 40,
+            scale: 8,
+            isNullable: true,
+          },
+          {
+            name: 'lower_threshold',
+            type: 'decimal',
+            unsigned: true,
+            precision: 40,
+            scale: 8,
+            isNullable: true,
+          },
+          {
+            name: 'middle_threshold',
+            type: 'decimal',
+            unsigned: true,
+            precision: 40,
+            scale: 8,
+            isNullable: true,
+          },
+          {
+            name: 'minimum_collect_amount',
+            type: 'decimal',
+            unsigned: true,
+            precision: 40,
+            scale: 8,
+            isNullable: true,        
+          },
+          {
+            name: 'hd_path',
+            type: 'varchar',
+            isNullable: true,
+          },
+          {
             name: 'created_at',
             type: 'bigint',
             isNullable: true,
@@ -69,46 +106,52 @@ export class CurrencyConfig1557194001002 implements MigrationInterface {
     );
     await queryRunner.query(
       `INSERT INTO ${tableName} ` +
-        '(`currency`, `network`, `chain_id`, `chain_name`, `average_block_time`, `required_confirmations`, `internal_endpoint`, `rpc_endpoint`, `rest_endpoint`, `explorer_endpoint`, `created_at`, `updated_at`)' +
+        '(`currency`, `network`, `chain_id`, `chain_name`, `average_block_time`, `required_confirmations`, `internal_endpoint`, `rpc_endpoint`, `rest_endpoint`, `explorer_endpoint`, `created_at`, `updated_at`, `hd_path`)' +
         ' VALUES ' +
-        `('btc', 'testnet', '', 'Testnet', 30000, 1, 'http://localhost:47001', '{\"protocol\":\"http\",\"host\":\"192.168.1.204\",\"port\":\"18532\",\"user\":\"admin\",\"pass\":\"1\"}', 'http://192.168.1.203:3001/api', 'http://test.insight.masternode.io:3001', 1557636432024, 1557636432024)`
+        `('btc', 'testnet', '', 'Testnet', 30000, 1, 'http://0.0.0.0:47001', '{\"protocol\":\"http\",\"host\":\"192.168.1.204\",\"port\":\"18532\",\"user\":\"admin\",\"pass\":\"1\"}', 'http://192.168.1.203:3001/api', 'http://test.insight.masternode.io:3001', 1557636432024, 1557636432024, "m/44'/0'/0'/0/")`
+    );
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`currency`, `network`, `chain_id`, `chain_name`, `average_block_time`, `required_confirmations`, `internal_endpoint`, `rpc_endpoint`, `rest_endpoint`, `explorer_endpoint`, `created_at`, `updated_at`, `hd_path`)' +
+        ' VALUES ' +
+        `('bch', 'testnet', '', 'Testnet', 30000, 1, 'http://0.0.0.0:47012', '{"protocol":"http","host":"192.168.1.203","port":"8336","user":"admin","pass":"1"}', 'http://192.168.1.203:3006/api', 'http://test.insight.masternode.io:3001', 1557636432024, 1557636432024, "m/44'/145'/0'/0/")`
+    );
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`currency`, `network`, `chain_id`, `chain_name`, `average_block_time`, `required_confirmations`, `internal_endpoint`, `rpc_endpoint`, `rest_endpoint`, `explorer_endpoint`, `created_at`, `updated_at` ,`hd_path`)' +
+        ' VALUES ' +
+        `('ltc', 'testnet', '', 'Testnet', 30000, 1, 'http://0.0.0.0:47014', '{"protocol":"http","host":"192.168.1.203","port":"3701","user":"admin","pass":"1"}', 'http://192.168.1.203:3702/api', 'http://test.insight.masternode.io:3001', 1557636432024, 1557636432024, "m/44'/2'/0'/0/")`
+    );
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`currency`, `network`, `chain_id`, `chain_name`, `average_block_time`, `required_confirmations`, `internal_endpoint`, `rpc_endpoint`, `rest_endpoint`, `explorer_endpoint`, `created_at`, `updated_at`, `hd_path`)' +
+        ' VALUES ' +
+        `('omni.2', 'testnet', '', 'Testnet', 30000, 1, 'http://0.0.0.0:47001', '{\"protocol\":\"http\",\"host\":\"192.168.1.204\",\"port\":\"18532\",\"user\":\"admin\",\"pass\":\"1\"}', 'http://192.168.1.203:3001/api', 'http://test.insight.masternode.io:3001', 1557636432024, 1557636432024, "m/44'/0'/0'/0/")`
     );
     await queryRunner.query(
       `INSERT INTO ${tableName} ` +
         '(`currency`, `network`, `chain_id`, `chain_name`, `average_block_time`, `required_confirmations`, `internal_endpoint`, `rpc_endpoint`, `rest_endpoint`, `explorer_endpoint`, `created_at`, `updated_at`)' +
         ' VALUES ' +
-        `('bch', 'testnet', '', 'Testnet', 30000, 1, 'http://localhost:47012', '{"rpcProtocol":"http","rpcHost":"192.168.1.203","rpcPort":"8336","rpcUser":"admin","rpcPassword":"1"}', 'http://192.168.1.203:3006/api', 'http://test.insight.masternode.io:3001', 1557636432024, 1557636432024)`
+        `('eos', 'testnet', '5fff1dae8dc8e2fc4d5b23b2c7665c97f9e9d8edf2b6485a86ba311c25639191', 'Kylin', 15000, 6, 'http://0.0.0.0:47013', '', 'https://api.kylin.alohaeos.com', '', 1557636432024, 1557636432024)`
     );
     await queryRunner.query(
       `INSERT INTO ${tableName} ` +
-        '(`currency`, `network`, `chain_id`, `chain_name`, `average_block_time`, `required_confirmations`, `internal_endpoint`, `rpc_endpoint`, `rest_endpoint`, `explorer_endpoint`, `created_at`, `updated_at`)' +
+        '(`currency`, `network`, `chain_id`, `chain_name`, `average_block_time`, `required_confirmations`, `internal_endpoint`, `rpc_endpoint`, `rest_endpoint`, `explorer_endpoint`, `created_at`, `updated_at`, `hd_path`)' +
         ' VALUES ' +
-        `('ltc', 'testnet', '', 'Testnet', 30000, 1, 'http://localhost:47014', '{"rpcProtocol":"http","rpcHost":"192.168.1.203","rpcPort":"3701","rpcUser":"admin","rpcPassword":"1"}', 'http://192.168.1.203:3702/api', 'http://test.insight.masternode.io:3001', 1557636432024, 1557636432024)`
-    );
-    await queryRunner.query(
-      `INSERT INTO ${tableName} ` +
-        '(`currency`, `network`, `chain_id`, `chain_name`, `average_block_time`, `required_confirmations`, `internal_endpoint`, `rpc_endpoint`, `rest_endpoint`, `explorer_endpoint`, `created_at`, `updated_at`)' +
-        ' VALUES ' +
-        `('omni.2', 'testnet', '', 'Testnet', 30000, 1, 'http://localhost:47001', '{\"protocol\":\"http\",\"host\":\"192.168.1.204\",\"port\":\"18532\",\"user\":\"admin\",\"pass\":\"1\"}', 'http://192.168.1.203:3001/api', 'http://test.insight.masternode.io:3001', 1557636432024, 1557636432024)`
-    );
-    await queryRunner.query(
-      `INSERT INTO ${tableName} ` +
-        '(`currency`, `network`, `chain_id`, `chain_name`, `average_block_time`, `required_confirmations`, `internal_endpoint`, `rpc_endpoint`, `rest_endpoint`, `explorer_endpoint`, `created_at`, `updated_at`)' +
-        ' VALUES ' +
-        `('eos', 'testnet', '5fff1dae8dc8e2fc4d5b23b2c7665c97f9e9d8edf2b6485a86ba311c25639191', 'Kylin', 15000, 6, 'http://localhost:47013', '', 'https://api.kylin.alohaeos.com', '', 1557636432024, 1557636432024)`
-    );
-    await queryRunner.query(
-      `INSERT INTO ${tableName} ` +
-        '(`currency`, `network`, `chain_id`, `chain_name`, `average_block_time`, `required_confirmations`, `internal_endpoint`, `rpc_endpoint`, `rest_endpoint`, `explorer_endpoint`, `created_at`, `updated_at`)' +
-        ' VALUES ' +
-        `('eth', 'testnet', '4', 'Rinkeby', '6000', '6', 'http://localhost:47002', '', '', 'https://rinkeby.etherscan.io', '1557636432024', '1557636432024')`
+        `('eth', 'testnet', '4', 'Rinkeby', '6000', '6', 'http://0.0.0.0:47002', '', '', 'https://rinkeby.etherscan.io', '1557636432024', '1557636432024', "m/44'/60'/0'/0/")`
     );
     await queryRunner.query(
       `INSERT INTO ${tableName} ` +
         '(`currency`, `network`, `chain_name`, `average_block_time`, `required_confirmations`, `internal_endpoint`, `rpc_endpoint`, `rest_endpoint`, `explorer_endpoint`, `created_at`, `updated_at`)' +
         ' VALUES ' +
-        `('xrp', 'testnet', 'Testnet', '3500', '10', 'http://localhost:47004', '', '', 'https://test.bithomp.com/explorer/', '1557636432024', '1557636432024')`
+        `('xrp', 'testnet', 'Testnet', '3500', '10', 'http://0.0.0.0:47004', '', '', 'https://test.bithomp.com/explorer/', '1557636432024', '1557636432024')`
     );
+    await queryRunner.query(
+      `INSERT INTO ${tableName} ` +
+        '(`currency`, `network`, `chain_name`, `average_block_time`, `required_confirmations`, `internal_endpoint`, `rpc_endpoint`, `rest_endpoint`, `explorer_endpoint`, `created_at`, `updated_at`)' +
+        ' VALUES ' +
+        `('ada', 'testnet', 'Testnet', '6000', '9', 'http://0.0.0.0:47011', '', 'http://192.168.1.204:8090', 'http://192.168.1.204:8100/', '1557636432024', '1557636432024')`
+    );    
   }
 
   public async down(queryRunner: QueryRunner): Promise<any> {

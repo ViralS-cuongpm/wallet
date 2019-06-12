@@ -1,3 +1,4 @@
+
 import {
   getLogger,
   ISubmittedTransaction,
@@ -77,7 +78,8 @@ async function _senderDoProcess(manager: EntityManager, sender: BasePlatformWork
   try {
     sentResultObj = await gateway.sendRawTransaction(signedRecord.signedRaw);
   } catch (e) {
-    logger.error(`Cannot broadcast withdrawlTxId=${signedRecord.id} due to error=${util.inspect(e)}`);
+    console.log(e.response)
+    // logger.error(`Cannot broadcast withdrawlTxId=${signedRecord.id} due to error=${util.inspect(e)}`);
     return;
   }
 

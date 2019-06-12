@@ -1,4 +1,4 @@
-import 'sota-ltc';
+import 'sota-btc';
 import { ICrawlerOptions } from 'sota-common';
 import { prepareEnvironment, callbacks } from 'wallet-core';
 import { BaseCurrencyWorker, ICurrency, IOmniAsset, ICurrencyWorkerOptions, CurrencyRegistry } from 'sota-common';
@@ -13,8 +13,8 @@ function start(): void {
   const { doNothing } = callbacks;
   const crawlerOpts: ICurrencyWorkerOptions = {
     prepare: doNothing,
-    doProcess: callbacks.verifierDoProcess,
+    doProcess: callbacks.feeSeederDoProcess,
   };
-  const crawler = new BaseCurrencyWorker(CurrencyRegistry.Litecoin, crawlerOpts);
+  const crawler = new BaseCurrencyWorker(CurrencyRegistry.Bitcoin, crawlerOpts);
   crawler.start();
 }

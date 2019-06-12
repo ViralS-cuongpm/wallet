@@ -1,8 +1,10 @@
 import _ from 'lodash';
 import { EntityManager, In } from 'typeorm';
-import { HotWallet, InternalTransfer, Withdrawal } from '../entities';
+import { HotWallet, InternalTransfer, Withdrawal, CurrencyConfig } from '../entities';
 import { InternalTransferType, WithdrawalStatus } from '../Enums';
 import { getLogger, BigNumber, ICurrency, GatewayRegistry } from 'sota-common';
+import { RallyWallet } from '../entities/RallyWallet';
+import { ColdWallet } from '../entities/ColdWallet';
 
 const logger = getLogger('rawdb::findHotWallets');
 
@@ -69,6 +71,32 @@ export async function findFreeHotWallets(
 
   // Pick hot wallets that are not busy at the moment
   return hotWallets.filter(hotWallet => !_.includes(busyAddresses, hotWallet.address));
+}
+
+export async function findOneCurrency(manager: EntityManager, symbol: string): Promise<CurrencyConfig> {
+  const currency = await manager.findOne(CurrencyConfig, {
+    where: {
+      symbol,
+    }
+  });
+  return currency;
+}
+export async function findAnyColdWallet(
+  manager: EntityManager,
+  walletId: number,
+  currency: string
+): Promise<ColdWallet> {
+  const wallet = await manager.findOne(ColdWallet, { walletId, currency });
+  return wallet;
+}
+
+export async function findAnyRallyWallet(
+  manager: EntityManager,
+  walletId: number,
+  currency: string
+): Promise<RallyWallet> {
+  const wallet = await manager.findOne(RallyWallet, { walletId, currency });
+  return wallet;
 }
 
 /**
@@ -169,5 +197,12 @@ export async function getOneHotWallet(manager: EntityManager, currency: string, 
     throw new Error(`Could not get hot wallet with specific information: currency=${currency}, address=${address}`);
   }
 
+  return hotWallet;
+}
+
+export async function findHotWalletByAddress(manager: EntityManager, address: string): Promise<HotWallet> {
+  const hotWallet = await manager.findOne(HotWallet, {
+    address,
+  });
   return hotWallet;
 }

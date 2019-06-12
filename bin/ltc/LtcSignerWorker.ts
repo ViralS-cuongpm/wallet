@@ -1,4 +1,4 @@
-import 'sota-btc';
+import 'sota-ltc';
 import { ICrawlerOptions } from 'sota-common';
 import { prepareEnvironment, callbacks } from 'wallet-core';
 import { BaseCurrencyWorker, ICurrency, IOmniAsset, ICurrencyWorkerOptions, CurrencyRegistry } from 'sota-common';

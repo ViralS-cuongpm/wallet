@@ -1,7 +1,8 @@
 import { EntityManager, In, LessThan, Not } from 'typeorm';
-import { Wallet, Address, HotWallet, WalletBalance, WithdrawalTx, EnvConfig, Withdrawal, WalletLog } from '../entities';
+import { Wallet, Address, HotWallet, WalletBalance, WithdrawalTx, EnvConfig, Withdrawal, WalletLog, CurrencyConfig } from '../entities';
 import { userId, UNSIGNED, kmsId, indexOfHotWallet } from './Const';
-import { BigNumber, CurrencyRegistry, Account } from 'sota-common';
+import { BigNumber, CurrencyRegistry, Account, Utils } from 'sota-common';
+import * as _ from 'lodash'
 
 const passwordHash = require('password-hash');
 
@@ -35,19 +36,17 @@ export async function saveAddresses(
   connection: EntityManager
 ) {
   const newAddresses: Address[] = [];
-  await Promise.all(
-    addresses.map(address => {
-      const newAddress = new Address();
-      newAddress.walletId = walletId;
-      newAddress.currency = currency;
-      newAddress.address = address.address;
-      newAddress.secret = address.privateKey;
-      newAddress.hdPath = path;
-      newAddress.isExternal = false;
-      newAddress.isHd = true;
-      return newAddresses.push(newAddress);
-    })
-  );
+  addresses.forEach(address => {
+    const newAddress = new Address();
+    newAddress.walletId = walletId;
+    newAddress.currency = currency;
+    newAddress.address = address.address;
+    newAddress.secret = address.privateKey;
+    newAddress.hdPath = path;
+    newAddress.isExternal = false;
+    newAddress.isHd = true;
+    return newAddresses.push(newAddress);
+  })
   await connection.getRepository(Address).save(newAddresses);
 }
 export async function createWallet(currency: string, connection: EntityManager) {
@@ -253,4 +252,56 @@ export async function findSecretWallet(currency: string, connection: EntityManag
     },
   });
   return wallet.secret;
+}
+
+export async function saveMailerReceive(mailerReceive: string, connection: EntityManager) {
+  let receiver = await connection.getRepository(EnvConfig).findOne({
+    where: {
+      key: 'MAILER_RECEIVER'
+    }
+  })
+  if (!receiver) {
+    receiver = new EnvConfig();
+    receiver.key = 'MAILER_RECEIVER';
+  }
+  receiver.value = mailerReceive;
+  await connection.getRepository(EnvConfig).save(receiver);
+  return receiver;
+}
+
+export async function saveCurrencyThresholdInfor(currency: string, minThreshold: number, maxThreshold: number, connection: EntityManager) {
+  let currencyConfig = await connection.getRepository(CurrencyConfig).findOne({
+    where: {
+      currency: currency
+    }
+  })
+  if (!currencyConfig) {
+   throw new Error ('dont have currency!');
+  }
+  currencyConfig.upperThreshold = maxThreshold.toString();
+  currencyConfig.lowerThreshold = minThreshold.toString();
+  currencyConfig.middleThreshold = new BigNumber(currencyConfig.upperThreshold).plus(currencyConfig.lowerThreshold).div(new BigNumber(2)).toString();
+  await connection.getRepository(CurrencyConfig).save(currencyConfig);
+  return currencyConfig;
+}
+
+export async function getSettingThresholdDB(connection: EntityManager) {
+  const listCurrencies = await connection.getRepository(CurrencyConfig).find();
+  return listCurrencies.map(listCurrency => filterObject(listCurrency));
+}
+
+function filterObject(current: any) {
+  return _.pick(current, ['currency', 'upperThreshold', 'lowerThreshold'])
+}
+
+export async function findHdPathDB(currency: string, connection: EntityManager) {
+  const hdPath = (await connection.getRepository(CurrencyConfig).findOne({
+    where: {
+      currency: currency
+    }
+  })).hdPath;
+  if (!hdPath) {
+    throw new Error('Dont support create hd wallet for this currency: ' + currency);
+  }
+  return hdPath;
 }

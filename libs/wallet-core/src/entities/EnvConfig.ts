@@ -8,4 +8,21 @@ export class EnvConfig {
 
   @Column({ name: 'value' })
   public value: string;
+
+  @Column({ name: 'created_at', type: 'bigint' })
+  public createdAt: number;
+
+  @Column({ name: 'updated_at', type: 'bigint' })
+  public updatedAt: number;
+  
+  @BeforeInsert()
+  public updateCreateDates() {
+    this.createdAt = Utils.nowInMillis();
+    this.updatedAt = Utils.nowInMillis();
+  }
+
+  @BeforeUpdate()
+  public updateUpdateDates() {
+    this.updatedAt = Utils.nowInMillis();
+  }
 }

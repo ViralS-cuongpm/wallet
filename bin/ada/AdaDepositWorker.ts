@@ -1,7 +1,8 @@
-import 'sota-ltc';
+import 'sota-ada';
 import { ICrawlerOptions } from 'sota-common';
 import { prepareEnvironment, callbacks } from 'wallet-core';
-import { LtcCrawler } from 'sota-ltc';
+import { CardanoCrawler } from 'sota-ada';
+
 prepareEnvironment()
   .then(start)
   .catch(err => {
@@ -17,6 +18,6 @@ function start(): void {
     onBlockCrawled,
   };
 
-  const crawler = new LtcCrawler(crawlerOpts);
+  const crawler = new CardanoCrawler(crawlerOpts);
   crawler.start();
 }

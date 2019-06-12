@@ -28,6 +28,7 @@ export class RallyWallet1557195002005 implements MigrationInterface {
             type: 'varchar',
             isNullable: false,
             length: '200',
+            isPrimary: true
           },
           {
             name: 'created_at',

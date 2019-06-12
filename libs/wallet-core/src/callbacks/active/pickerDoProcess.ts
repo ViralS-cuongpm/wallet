@@ -80,7 +80,7 @@ async function _pickerDoProcess(manager: EntityManager, picker: BaseCurrencyWork
       logger.error(`No available hot wallet walletId=${walletId} currency=${currency} failedCounter=${failedCounter}`);
     } else {
       // Else just print info and continue to wait
-      logger.info(`No available hot wallet at the moment: walletId=${walletId} currency=${currency}`);
+      logger.info(`No available hot wallet at the moment: walletId=${walletId} currency=${currency.symbol}`);
     }
 
     await rawdb.updateRecordsTimestamp(manager, Withdrawal, withdrawalIds);

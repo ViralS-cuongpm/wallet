@@ -27,3 +27,4 @@ export * from './updateWalletBalanceOnlyFee';
 export * from './getNextPickedWithdrawals';
 export * from './updateRecordsTimestamp';
 export * from './doPickingWithdrawals';
+export * from './findInfoSendEmail';
