@@ -1,25 +1,5 @@
 {
-  "apps": [
-    {
-      "name": "hot-wallet-Bch-crawler",
-      "script": "bin/bch/BchDepositWorker.ts"
-    },
-    {
-      "name": "hot-wallet-Bch-picker",
-      "script": "bin/bch/BchPickerWorker.ts"
-    },
-    {
-      "name": "hot-wallet-Bch-sender",
-      "script": "bin/bch/BchSenderWorker.ts"
-    },
-    {
-      "name": "hot-wallet-Bch-verifier",
-      "script": "bin/bch/BchVerifierWorker.ts"
-    },
-    {
-      "name": "hot-wallet-Bch-collector",
-      "script": "bin/bch/BchCollectorWorker.ts"
-    },
+  "apps": [    
     {
       "name": "hot-wallet-Btc-crawler",
       "script": "bin/btc/BtcDepositWorker.ts"
@@ -27,6 +7,10 @@
     {
       "name": "hot-wallet-Btc-picker",
       "script": "bin/btc/BtcPickerWorker.ts"
+    },
+    {
+      "name": "hot-wallet-Btc-signer",
+      "script": "bin/btc/BtcSignerWorker.ts"
     },
     {
       "name": "hot-wallet-Btc-sender",
@@ -41,9 +25,13 @@
       "script": "bin/btc/BtcCollectorWorker.ts"
     },
     {
-      "name": "hot-wallet-Btc-collector",
-      "script": "bin/btc/BtcWebService.ts"
+      "name": "hot-wallet-Btc-fee-seeder",
+      "script": "bin/btc/BtcFeeSeederWorker.ts"
     },
+    {
+      "name": "hot-wallet-Btc-webservice",
+      "script": "bin/btc/BtcWebService.ts"
+    },  
     {
       "name": "hot-wallet-Ltc-crawler",
       "script": "bin/ltc/LtcDepositWorker.ts"
@@ -51,6 +39,10 @@
     {
       "name": "hot-wallet-Ltc-picker",
       "script": "bin/ltc/LtcPickerWorker.ts"
+    },
+    {
+      "name": "hot-wallet-Ltc-signer",
+      "script": "bin/ltc/LtcSignerWorker.ts"
     },
     {
       "name": "hot-wallet-Ltc-sender",
@@ -65,28 +57,8 @@
       "script": "bin/ltc/LtcCollectorWorker.ts"
     },
     {
-      "name": "hot-wallet-Ltc-collector",
+      "name": "hot-wallet-Ltc-webservice",
       "script": "bin/ltc/LtcWebService.ts"
-    },
-    {
-      "name": "hot-wallet-eos-crawler",
-      "script": "bin/eos/EosDepositWorker.ts"
-    },
-    {
-      "name": "hot-wallet-eos-picker",
-      "script": "bin/eos/EosPickerWorker.ts"
-    },
-    {
-      "name": "hot-wallet-eos-sender",
-      "script": "bin/eos/EosSenderWorker.ts"
-    },
-    {
-      "name": "hot-wallet-eos-verifier",
-      "script": "bin/eos/EosVerifierWorker.ts"
-    },
-    {
-      "name": "hot-wallet-rest",
-      "script": "bin/eos/EosWebService.ts"
     }
   ]
 }

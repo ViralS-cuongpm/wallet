@@ -36,6 +36,11 @@ export class Wallet1557195002001 implements MigrationInterface {
             type: 'text',
           },
           {
+            name: 'meta',
+            type: 'text',
+            isNullable: true,
+          },
+          {
             name: 'is_hd',
             type: 'tinyint',
           },
@@ -62,7 +67,7 @@ export class Wallet1557195002001 implements MigrationInterface {
       `INSERT INTO ${tableName} ` +
         '(`id`, `user_id`, `label`, `currency`, `secret`, `is_hd`, `created_at`, `updated_at`)' +
         ' VALUES ' +
-        `('1001', '1', 'BTC Wallet', 'btc', 'haha', 1, 1557636432024, 1557636432024)`
+        `('1001', '1', 'BTC Wallet', 'btc', 'hahaha', 1, 1557636432024, 1557636432024)`
     );
     await queryRunner.query(
       `INSERT INTO ${tableName} ` +
@@ -74,7 +79,7 @@ export class Wallet1557195002001 implements MigrationInterface {
       `INSERT INTO ${tableName} ` +
         '(`id`, `user_id`, `label`, `currency`, `secret`, `is_hd`, `created_at`, `updated_at`)' +
         ' VALUES ' +
-        `('1003', '1', 'ADA Wallet', 'ada', 'default', 1, 1557636432024, 1557636432024)`
+        `('1003', '1', 'ADA Wallet', 'ada', 'default', 0, 1557636432024, 1557636432024)`
     );
     await queryRunner.query(
       `INSERT INTO ${tableName} ` +
